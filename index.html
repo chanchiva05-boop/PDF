@@ -15,14 +15,14 @@
   :root {
     --primary: #6366f1;
     --primary-dark: #4f46e5;
-    --primary-light: #818cf8;
     --secondary: #ec4899;
-    --accent: #f59e0b;
     --success: #10b981;
+    --success-dark: #059669;
     --danger: #ef4444;
     --merge: #ef4444;
     --split: #06b6d4;
     --split-dark: #0891b2;
+    --share: #3b82f6;
     --text-dark: #1e293b;
     --text-mid: #475569;
     --text-light: #94a3b8;
@@ -55,7 +55,6 @@
     overflow: hidden;
   }
 
-  /* ===== Header ===== */
   .header { text-align: center; padding: 32px 32px 20px; }
   .header .icon-badge {
     display: inline-flex;
@@ -71,7 +70,6 @@
   .header h1 { color: var(--text-dark); font-size: 24px; font-weight: 700; margin-bottom: 6px; }
   .header p { color: var(--text-light); font-size: 13px; }
 
-  /* ===== Tabs ===== */
   .tabs {
     display: flex;
     gap: 6px;
@@ -111,11 +109,9 @@
     box-shadow: 0 6px 16px rgba(6, 182, 212, 0.3);
   }
 
-  /* ===== Panel ===== */
   .panel { padding: 28px 32px 32px; display: none; }
   .panel.active { display: block; }
 
-  /* ===== Form ===== */
   .form-group { margin-bottom: 22px; }
   .form-group label {
     display: flex;
@@ -170,7 +166,6 @@
     font-weight: 400;
   }
 
-  /* ===== File Drop ===== */
   .file-drop {
     position: relative;
     border: 2px dashed var(--border);
@@ -208,7 +203,6 @@
   .file-drop .drop-title { color: var(--text-dark); font-size: 15px; font-weight: 600; margin-bottom: 4px; }
   .file-drop .drop-sub { color: var(--text-light); font-size: 13px; }
 
-  /* ===== Thumbs Header ===== */
   .thumbs-header {
     display: none;
     justify-content: space-between;
@@ -336,7 +330,6 @@
   .thumb .actions button:hover { background: #eef2ff; }
   .thumb .actions button[data-act="del"]:hover { background: #fee2e2; }
 
-  /* ===== PDF List (Merge) ===== */
   .pdf-list { display: flex; flex-direction: column; gap: 10px; margin-top: 6px; }
   .pdf-item {
     position: relative;
@@ -413,7 +406,6 @@
   }
   .pdf-item .remove-btn:hover { background: #fee2e2; color: var(--danger); }
 
-  /* ===== Split Info Card ===== */
   .split-info {
     display: flex;
     align-items: center;
@@ -455,7 +447,6 @@
     font-weight: 700;
   }
 
-  /* ===== Split Mode Selector ===== */
   .mode-selector {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -479,10 +470,7 @@
     transition: all 0.2s;
   }
   .mode-btn .mode-icon { font-size: 22px; }
-  .mode-btn:hover {
-    border-color: var(--split);
-    background: #ecfeff;
-  }
+  .mode-btn:hover { border-color: var(--split); background: #ecfeff; }
   .mode-btn.active {
     border-color: var(--split);
     background: linear-gradient(135deg, #ecfeff, #cffafe);
@@ -490,7 +478,6 @@
     box-shadow: 0 4px 12px rgba(6, 182, 212, 0.15);
   }
 
-  /* ===== Range Inputs ===== */
   .range-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -510,7 +497,6 @@
     font-weight: 700;
   }
 
-  /* ===== Skip Input ===== */
   .skip-wrap {
     margin-bottom: 18px;
     padding: 14px;
@@ -539,7 +525,6 @@
     font-weight: 500;
   }
 
-  /* ===== Preset Buttons ===== */
   .presets {
     display: flex;
     flex-wrap: wrap;
@@ -564,7 +549,6 @@
     border-color: var(--split);
   }
 
-  /* ===== Preview Box ===== */
   .preview-box {
     padding: 14px;
     background: #f8fafc;
@@ -600,11 +584,7 @@
     font-size: 13px;
     font-weight: 700;
   }
-  .preview-empty {
-    font-size: 13px;
-    color: var(--text-light);
-    font-style: italic;
-  }
+  .preview-empty { font-size: 13px; color: var(--text-light); font-style: italic; }
   .preview-summary {
     margin-top: 10px;
     padding-top: 10px;
@@ -615,7 +595,6 @@
   }
   .preview-summary strong { color: var(--split); }
 
-  /* ===== Buttons ===== */
   .btn-main {
     width: 100%;
     padding: 16px;
@@ -637,26 +616,19 @@
   }
   .btn-main:hover:not(:disabled) { box-shadow: 0 10px 24px rgba(99, 102, 241, 0.4); }
   .btn-main:active:not(:disabled) { transform: scale(0.98); }
-  .btn-main:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    box-shadow: none;
-    background: #cbd5e1;
-  }
+  .btn-main:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; background: #cbd5e1; }
   .btn-main.merge {
     background: linear-gradient(135deg, #ef4444, #dc2626);
     box-shadow: 0 6px 16px rgba(239, 68, 68, 0.3);
   }
   .btn-main.merge:hover:not(:disabled) { box-shadow: 0 10px 24px rgba(239, 68, 68, 0.4); }
   .btn-main.merge:disabled { background: #cbd5e1; }
-
   .btn-main.split {
     background: linear-gradient(135deg, var(--split), var(--split-dark));
     box-shadow: 0 6px 16px rgba(6, 182, 212, 0.3);
   }
   .btn-main.split:hover:not(:disabled) { box-shadow: 0 10px 24px rgba(6, 182, 212, 0.4); }
   .btn-main.split:disabled { background: #cbd5e1; }
-
   .btn-main .icon { font-size: 20px; }
 
   .btn-reset {
@@ -679,13 +651,155 @@
   }
   .btn-reset:hover { background: var(--primary); color: #fff; }
   .btn-reset.show { display: flex; }
-  .btn-reset.split {
-    color: var(--split);
-    border-color: var(--split);
-  }
+  .btn-reset.split { color: var(--split); border-color: var(--split); }
   .btn-reset.split:hover { background: var(--split); color: #fff; }
 
-  /* ===== Progress ===== */
+  /* ===== Result Card ===== */
+  .result-card {
+    display: none;
+    margin-top: 18px;
+    padding: 20px;
+    background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+    border: 2px solid #86efac;
+    border-radius: var(--radius);
+    animation: resultIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .result-card.show { display: block; }
+  @keyframes resultIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .result-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .result-header .check-icon {
+    flex-shrink: 0;
+    width: 46px; height: 46px;
+    background: linear-gradient(135deg, var(--success), var(--success-dark));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: #fff;
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35);
+  }
+  .result-header .result-title { flex: 1; min-width: 0; }
+  .result-header .result-title h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #065f46;
+    margin-bottom: 4px;
+  }
+  .result-header .result-title p {
+    font-size: 13px;
+    color: #047857;
+    font-weight: 500;
+  }
+  .result-header .result-name {
+    font-size: 13px;
+    color: #065f46;
+    font-weight: 600;
+    background: #d1fae5;
+    padding: 4px 10px;
+    border-radius: 8px;
+    display: inline-block;
+    margin-top: 4px;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .result-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .result-btn {
+    padding: 14px 16px;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: box-shadow 0.2s, transform 0.15s;
+  }
+  .result-btn:active { transform: scale(0.97); }
+  .result-btn .icon { font-size: 18px; }
+
+  .result-btn.download {
+    background: linear-gradient(135deg, var(--success), var(--success-dark));
+    color: #fff;
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35);
+  }
+  .result-btn.download:hover { box-shadow: 0 10px 24px rgba(16, 185, 129, 0.5); }
+  .result-btn.share {
+    background: #fff;
+    color: var(--share);
+    border: 2px solid var(--share);
+  }
+  .result-btn.share:hover {
+    background: var(--share);
+    color: #fff;
+    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.35);
+  }
+
+  .share-menu {
+    display: none;
+    margin-top: 12px;
+    padding: 12px;
+    background: #fff;
+    border: 2px solid var(--border);
+    border-radius: var(--radius-sm);
+    animation: resultIn 0.25s ease;
+  }
+  .share-menu.show { display: block; }
+  .share-menu .share-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  .share-options {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+  .share-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 10px 6px;
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-mid);
+    transition: background-color 0.15s, border-color 0.15s;
+  }
+  .share-option:hover {
+    background: #eef2ff;
+    border-color: var(--primary);
+  }
+  .share-option .share-icon { font-size: 22px; line-height: 1; }
+
   .progress-wrap { margin-top: 18px; display: none; }
   .progress-wrap.active { display: block; }
   .progress-bar {
@@ -715,7 +829,6 @@
   .progress-wrap.merge-active .progress-text .pct { color: var(--merge); }
   .progress-wrap.split-active .progress-text .pct { color: var(--split); }
 
-  /* ===== Status ===== */
   .status {
     text-align: center;
     margin-top: 14px;
@@ -732,12 +845,8 @@
     border-radius: var(--radius-sm);
     border: 1px solid #a7f3d0;
   }
-  .status.error {
-    color: var(--danger);
-    font-weight: 600;
-  }
+  .status.error { color: var(--danger); font-weight: 600; }
 
-  /* ===== Hint ===== */
   .hint-bar {
     display: none;
     align-items: center;
@@ -753,7 +862,6 @@
   }
   .hint-bar.show { display: flex; }
 
-  /* ===== Crop Modal ===== */
   .modal {
     display: none;
     position: fixed;
@@ -865,7 +973,6 @@
   .btn-ok { background: var(--primary); color: #fff; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3); }
   .btn-ok:hover { box-shadow: 0 6px 18px rgba(99, 102, 241, 0.4); }
 
-  /* Cropper overrides */
   .cropper-view-box {
     outline: 2px solid #fff !important;
     outline-color: rgba(255, 255, 255, 0.9) !important;
@@ -908,7 +1015,6 @@
     border-radius: 8px;
   }
 
-  /* ===== Responsive ===== */
   @media (max-width: 640px) {
     body { padding: 12px 8px; }
     .header { padding: 24px 18px 16px; }
@@ -922,6 +1028,8 @@
     .thumb .img-wrap { height: 100px; }
     .range-grid { grid-template-columns: 1fr; gap: 10px; }
     .mode-selector { grid-template-columns: 1fr; }
+    .share-options { grid-template-columns: repeat(4, 1fr); }
+    .result-actions { grid-template-columns: 1fr; }
     .crop-toolbar button { padding: 6px 10px; font-size: 12px; }
     .modal-box { padding: 16px; border-radius: 16px; }
     .modal-footer button { padding: 10px 18px; font-size: 13px; }
@@ -936,7 +1044,6 @@
     <p>បម្លែង បញ្ចូល ឬ បំបែកឯកសារ PDF</p>
   </div>
 
-  <!-- Tabs -->
   <div class="tabs">
     <button class="tab active" data-tab="convert">
       <span class="tab-icon">🖼️</span>
@@ -985,6 +1092,41 @@
       <span>បម្លែងទៅ PDF</span>
     </button>
 
+    <!-- Result Card -->
+    <div class="result-card" id="convertResultCard">
+      <div class="result-header">
+        <div class="check-icon">✓</div>
+        <div class="result-title">
+          <h3>បម្លែងជោគជ័យ!</h3>
+          <p>ឯកសារ PDF របស់អ្នករួចរាល់ហើយ</p>
+          <span class="result-name" id="convertResultName">document.pdf</span>
+        </div>
+      </div>
+      <div class="result-actions">
+        <button class="result-btn download" data-result="convert" data-action="download">
+          <span class="icon">⬇️</span>
+          <span>ទាញយក</span>
+        </button>
+        <button class="result-btn share" data-result="convert" data-action="share">
+          <span class="icon">📤</span>
+          <span>ចែករំលែក</span>
+        </button>
+      </div>
+      <div class="share-menu" id="convertShareMenu">
+        <div class="share-title">ជ្រើសរើសវិធីចែករំលែក</div>
+        <div class="share-options">
+          <button class="share-option" data-share="native" data-result="convert"><span class="share-icon">📱</span><span>ឧបករណ៍</span></button>
+          <button class="share-option" data-share="whatsapp" data-result="convert"><span class="share-icon">💬</span><span>WhatsApp</span></button>
+          <button class="share-option" data-share="telegram" data-result="convert"><span class="share-icon">✈️</span><span>Telegram</span></button>
+          <button class="share-option" data-share="email" data-result="convert"><span class="share-icon">✉️</span><span>Email</span></button>
+          <button class="share-option" data-share="facebook" data-result="convert"><span class="share-icon">📘</span><span>Facebook</span></button>
+          <button class="share-option" data-share="copy" data-result="convert"><span class="share-icon">📋</span><span>ចម្លងតំណ</span></button>
+          <button class="share-option" data-share="print" data-result="convert"><span class="share-icon">🖨️</span><span>បោះពុម្ព</span></button>
+          <button class="share-option" data-share="open" data-result="convert"><span class="share-icon">👁️</span><span>មើល</span></button>
+        </div>
+      </div>
+    </div>
+
     <button class="btn-reset" id="resetBtn">
       <span>🔄</span>
       <span>ប្រើម្តងទៀត</span>
@@ -1031,6 +1173,41 @@
       <span>បញ្ចូល PDF ចូលគ្នា</span>
     </button>
 
+    <!-- Result Card -->
+    <div class="result-card" id="mergeResultCard">
+      <div class="result-header">
+        <div class="check-icon">✓</div>
+        <div class="result-title">
+          <h3>បញ្ចូលជោគជ័យ!</h3>
+          <p>ឯកសារ PDF ត្រូវបានបញ្ចូលគ្នាហើយ</p>
+          <span class="result-name" id="mergeResultName">merged-document.pdf</span>
+        </div>
+      </div>
+      <div class="result-actions">
+        <button class="result-btn download" data-result="merge" data-action="download">
+          <span class="icon">⬇️</span>
+          <span>ទាញយក</span>
+        </button>
+        <button class="result-btn share" data-result="merge" data-action="share">
+          <span class="icon">📤</span>
+          <span>ចែករំលែក</span>
+        </button>
+      </div>
+      <div class="share-menu" id="mergeShareMenu">
+        <div class="share-title">ជ្រើសរើសវិធីចែករំលែក</div>
+        <div class="share-options">
+          <button class="share-option" data-share="native" data-result="merge"><span class="share-icon">📱</span><span>ឧបករណ៍</span></button>
+          <button class="share-option" data-share="whatsapp" data-result="merge"><span class="share-icon">💬</span><span>WhatsApp</span></button>
+          <button class="share-option" data-share="telegram" data-result="merge"><span class="share-icon">✈️</span><span>Telegram</span></button>
+          <button class="share-option" data-share="email" data-result="merge"><span class="share-icon">✉️</span><span>Email</span></button>
+          <button class="share-option" data-share="facebook" data-result="merge"><span class="share-icon">📘</span><span>Facebook</span></button>
+          <button class="share-option" data-share="copy" data-result="merge"><span class="share-icon">📋</span><span>ចម្លងតំណ</span></button>
+          <button class="share-option" data-share="print" data-result="merge"><span class="share-icon">🖨️</span><span>បោះពុម្ព</span></button>
+          <button class="share-option" data-share="open" data-result="merge"><span class="share-icon">👁️</span><span>មើល</span></button>
+        </div>
+      </div>
+    </div>
+
     <button class="btn-reset" id="resetMergeBtn">
       <span>🔄</span>
       <span>ប្រើម្តងទៀត</span>
@@ -1056,7 +1233,6 @@
       </div>
     </div>
 
-    <!-- Split Info Card -->
     <div class="split-info" id="splitInfo" style="display:none;">
       <div class="info-icon">📕</div>
       <div class="info-body">
@@ -1066,7 +1242,6 @@
       <div class="info-badge" id="splitTotalPages">0</div>
     </div>
 
-    <!-- Split Mode -->
     <div id="splitOptions" style="display:none;">
       <div class="form-group">
         <label>របៀបបំបែក</label>
@@ -1082,9 +1257,7 @@
         </div>
       </div>
 
-      <!-- Range Mode Options -->
       <div id="rangeModeOptions">
-        <!-- Presets -->
         <div class="form-group">
           <label>ជម្រើសរហ័ស</label>
           <div class="presets">
@@ -1093,11 +1266,9 @@
             <button class="preset-btn" data-preset="second-half">ពាក់កណ្តាលក្រោយ</button>
             <button class="preset-btn" data-preset="odd">ទំព័រសេស</button>
             <button class="preset-btn" data-preset="even">ទំព័រគូ</button>
-            <button class="preset-btn" data-preset="reverse">បញ្ច្រាស</button>
           </div>
         </div>
 
-        <!-- Range -->
         <div class="range-grid">
           <div class="range-field">
             <label>ចាប់ពីទំព័រ</label>
@@ -1109,14 +1280,12 @@
           </div>
         </div>
 
-        <!-- Skip -->
         <div class="skip-wrap">
           <label>⏭️ រំលងទំព័រ</label>
           <input type="text" id="skipPages" placeholder="ឧទាហរណ៍៖ 2, 4, 5-7" autocomplete="off">
           <div class="hint-text">បំពេញលេខទំព័រដែលចង់រំលង ដោយប្រើសញ្ញាក្បៀស (,) និងសញ្ញាដក (-) សម្រាប់ជួរ</div>
         </div>
 
-        <!-- Preview -->
         <div class="preview-box">
           <div class="preview-label">👁️ ទំព័រដែលនឹងចម្លង</div>
           <div class="preview-pages" id="previewPages">
@@ -1126,7 +1295,6 @@
         </div>
       </div>
 
-      <!-- Each Mode Info -->
       <div id="eachModeOptions" style="display:none;">
         <div class="skip-wrap" style="background:#ecfeff;border-color:#a5f3fc;">
           <label style="color:#0e7490;">📚 របៀបបំបែករាល់ទំព័រ</label>
@@ -1142,6 +1310,41 @@
       <span class="icon">✂️</span>
       <span>បំបែក PDF</span>
     </button>
+
+    <!-- Result Card -->
+    <div class="result-card" id="splitResultCard">
+      <div class="result-header">
+        <div class="check-icon">✓</div>
+        <div class="result-title">
+          <h3>បំបែកជោគជ័យ!</h3>
+          <p>ឯកសារ PDF ត្រូវបានបំបែកហើយ</p>
+          <span class="result-name" id="splitResultName">split.pdf</span>
+        </div>
+      </div>
+      <div class="result-actions">
+        <button class="result-btn download" data-result="split" data-action="download">
+          <span class="icon">⬇️</span>
+          <span>ទាញយក</span>
+        </button>
+        <button class="result-btn share" data-result="split" data-action="share">
+          <span class="icon">📤</span>
+          <span>ចែករំលែក</span>
+        </button>
+      </div>
+      <div class="share-menu" id="splitShareMenu">
+        <div class="share-title">ជ្រើសរើសវិធីចែករំលែក</div>
+        <div class="share-options">
+          <button class="share-option" data-share="native" data-result="split"><span class="share-icon">📱</span><span>ឧបករណ៍</span></button>
+          <button class="share-option" data-share="whatsapp" data-result="split"><span class="share-icon">💬</span><span>WhatsApp</span></button>
+          <button class="share-option" data-share="telegram" data-result="split"><span class="share-icon">✈️</span><span>Telegram</span></button>
+          <button class="share-option" data-share="email" data-result="split"><span class="share-icon">✉️</span><span>Email</span></button>
+          <button class="share-option" data-share="facebook" data-result="split"><span class="share-icon">📘</span><span>Facebook</span></button>
+          <button class="share-option" data-share="copy" data-result="split"><span class="share-icon">📋</span><span>ចម្លងតំណ</span></button>
+          <button class="share-option" data-share="print" data-result="split"><span class="share-icon">🖨️</span><span>បោះពុម្ព</span></button>
+          <button class="share-option" data-share="open" data-result="split"><span class="share-icon">👁️</span><span>មើល</span></button>
+        </div>
+      </div>
+    </div>
 
     <button class="btn-reset split" id="resetSplitBtn">
       <span>🔄</span>
@@ -1164,7 +1367,6 @@
       <h3>✂️ Crop រូបភាព</h3>
       <span class="badge" id="cropInfo">0 × 0 px</span>
     </div>
-
     <div class="crop-toolbar">
       <button data-tool="free" class="active">🆓 សេរី</button>
       <button data-tool="square">⬛ 1:1</button>
@@ -1172,13 +1374,10 @@
       <button data-tool="4-3">📐 4:3</button>
       <button data-tool="reset">🔄 កំណត់ឡើងវិញ</button>
     </div>
-
     <div class="crop-area">
       <img id="cropImage" src="">
     </div>
-
     <p class="crop-hint">💡 ទាញជ្រុង ⚪ ឬ គែម ដើម្បីកាត់ • ទាញកណ្តាល crop box ដើម្បីផ្លាស់ទី</p>
-
     <div class="modal-footer">
       <button class="btn-cancel" onclick="closeCrop()">បោះបង់</button>
       <button class="btn-ok" onclick="applyCrop()">✓ យល់ព្រម</button>
@@ -1207,6 +1406,164 @@ tabs.forEach(tab => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 });
+
+/* =========================================================
+   RESULT STATE (ចែករំលែកសម្រាប់មុខងារទាំង 3)
+   ========================================================= */
+const results = {
+  convert: { blob: null, name: '', url: null },
+  merge:   { blob: null, name: '', url: null },
+  split:   { blob: null, name: '', url: null }
+};
+
+function setResult(type, blob, name) {
+  // Cleanup ចាស់
+  if (results[type].url) URL.revokeObjectURL(results[type].url);
+  results[type].blob = blob;
+  results[type].name = name;
+  results[type].url = URL.createObjectURL(blob);
+}
+
+function clearResult(type) {
+  if (results[type].url) URL.revokeObjectURL(results[type].url);
+  results[type].blob = null;
+  results[type].name = '';
+  results[type].url = null;
+}
+
+function showResultCard(type, name) {
+  const card = document.getElementById(`${type}ResultCard`);
+  const nameEl = document.getElementById(`${type}ResultName`);
+  nameEl.textContent = name;
+  card.classList.add('show');
+  setTimeout(() => {
+    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 200);
+}
+
+function hideResultCard(type) {
+  document.getElementById(`${type}ResultCard`).classList.remove('show');
+  document.getElementById(`${type}ShareMenu`).classList.remove('show');
+}
+
+/* ===== Download / Share Buttons (ទូទៅ) ===== */
+document.querySelectorAll('.result-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const type = btn.dataset.result;
+    const action = btn.dataset.action;
+    if (action === 'download') {
+      downloadResult(type);
+    } else if (action === 'share') {
+      const menu = document.getElementById(`${type}ShareMenu`);
+      menu.classList.toggle('show');
+    }
+  });
+});
+
+function downloadResult(type) {
+  const r = results[type];
+  if (!r.blob) return;
+  const url = URL.createObjectURL(r.blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = r.name;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+/* ===== Share Options (ទូទៅ) ===== */
+document.querySelectorAll('.share-option').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    const type = btn.dataset.result;
+    const shareType = btn.dataset.share;
+    await handleShare(type, shareType);
+  });
+});
+
+async function handleShare(type, shareType) {
+  const r = results[type];
+  if (!r.blob) return;
+  const file = new File([r.blob], r.name, { type: r.blob.type || 'application/pdf' });
+
+  if (shareType === 'native') {
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      try {
+        await navigator.share({ files: [file], title: r.name, text: 'ឯកសារ PDF របស់ខ្ញុំ' });
+      } catch (err) {
+        if (err.name !== 'AbortError') alert('មិនអាចចែករំលែកបានទេ');
+      }
+    } else if (navigator.share) {
+      try {
+        await navigator.share({ title: r.name, text: 'ឯកសារ PDF របស់ខ្ញុំ', url: r.url });
+      } catch (err) {
+        if (err.name !== 'AbortError') alert('មិនអាចចែករំលែកបានទេ');
+      }
+    } else {
+      alert('ឧបករណ៍របស់អ្នកមិនគាំទ្រ Native Share ទេ');
+    }
+    return;
+  }
+
+  if (shareType === 'copy') {
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(r.url);
+      } else {
+        const ta = document.createElement('textarea');
+        ta.value = r.url;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+      }
+      showTempMessage(type, '✅ បានចម្លងតំណភ្ជាប់');
+    } catch (err) {
+      alert('មិនអាចចម្លងបានទេ');
+    }
+    return;
+  }
+
+  if (shareType === 'print') {
+    const w = window.open(r.url, '_blank');
+    if (w) w.addEventListener('load', () => { try { w.print(); } catch(e) {} });
+    return;
+  }
+
+  if (shareType === 'open') {
+    window.open(r.url, '_blank');
+    return;
+  }
+
+  const shareText = encodeURIComponent('ឯកសារ PDF របស់ខ្ញុំ');
+  const shareUrl = encodeURIComponent(r.url);
+
+  if (shareType === 'whatsapp') {
+    window.open(`https://wa.me/?text=${shareText}%20${shareUrl}`, '_blank');
+  } else if (shareType === 'telegram') {
+    window.open(`https://t.me/share/url?url=${shareUrl}&text=${shareText}`, '_blank');
+  } else if (shareType === 'email') {
+    window.open(`mailto:?subject=${encodeURIComponent(r.name)}&body=${shareText}%20${shareUrl}`, '_blank');
+  } else if (shareType === 'facebook') {
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`, '_blank');
+  }
+
+  document.getElementById(`${type}ShareMenu`).classList.remove('show');
+}
+
+function showTempMessage(type, msg) {
+  const el = document.getElementById(`${type}Status`);
+  const prev = el.textContent;
+  el.textContent = msg;
+  el.classList.add('success');
+  setTimeout(() => {
+    el.textContent = prev;
+    el.classList.remove('success');
+  }, 2000);
+}
 
 /* =========================================================
    PART 1: CONVERT IMAGES → PDF
@@ -1310,10 +1667,8 @@ function renderThumbs() {
   thumbsHeader.classList.toggle('show', images.length > 0);
   if (images.length > 0) imgCount.textContent = images.length;
   hint.classList.toggle('show', images.length > 1);
-  if (images.length > 0) { statusEl.textContent = ''; statusEl.classList.remove('success', 'error'); }
 }
 
-/* ===== Drag helpers ===== */
 function onDragStart(e) {
   dragSrcId = Number(this.dataset.id);
   this.classList.add('dragging');
@@ -1344,7 +1699,6 @@ function onDrop(e) {
   renderThumbs();
 }
 
-/* ===== Touch drag (ទូទៅ) ===== */
 function addTouchDrag(el, id, inputToBlur, collection) {
   let touchDragEl = null;
   let holdTimer = null;
@@ -1420,7 +1774,6 @@ function handleAction(id, act) {
   renderThumbs();
 }
 
-/* ===== Crop ===== */
 let cropper = null;
 let cropTarget = null;
 
@@ -1490,13 +1843,15 @@ function setActiveTool(btn) {
   btn.classList.add('active');
 }
 
-/* ===== Convert to PDF ===== */
 convertBtn.addEventListener('click', async () => {
   if (images.length === 0) return;
   const name = pdfNameInput.value.trim() || 'document';
   convertBtn.disabled = true;
   statusEl.textContent = '';
   statusEl.classList.remove('success', 'error');
+  hideResultCard('convert');
+  clearResult('convert');
+
   progressWrap.classList.add('active');
   updateProgress(0);
 
@@ -1522,9 +1877,10 @@ convertBtn.addEventListener('click', async () => {
       await new Promise(r => setTimeout(r, 20));
     }
 
-    pdf.save(`${name}.pdf`);
-    statusEl.textContent = '✅ បានបម្លែងជោគជ័យ! ចង់បម្លែងឯកសារថ្មី? ចុច "ប្រើម្តងទៀត"';
-    statusEl.classList.add('success');
+    const blob = pdf.output('blob');
+    const fileName = `${name}.pdf`;
+    setResult('convert', blob, fileName);
+    showResultCard('convert', fileName);
     resetBtn.classList.add('show');
   } catch (err) {
     console.error(err);
@@ -1543,6 +1899,8 @@ resetBtn.addEventListener('click', () => {
   images = []; uid = 0; dragSrcId = null;
   fileInput.value = '';
   pdfNameInput.value = 'my-document';
+  clearResult('convert');
+  hideResultCard('convert');
   progressWrap.classList.remove('active');
   updateProgress(0);
   statusEl.textContent = '';
@@ -1684,7 +2042,6 @@ function renderPdfs() {
   pdfHeader.classList.toggle('show', pdfs.length > 0);
   if (pdfs.length > 0) pdfCount.textContent = pdfs.length;
   mergeHint.classList.toggle('show', pdfs.length > 1);
-  if (pdfs.length > 0) { mergeStatus.textContent = ''; mergeStatus.classList.remove('success', 'error'); }
 }
 
 function onPdfDragStart(e) {
@@ -1723,6 +2080,8 @@ mergeBtn.addEventListener('click', async () => {
   mergeBtn.disabled = true;
   mergeStatus.textContent = '';
   mergeStatus.classList.remove('success', 'error');
+  hideResultCard('merge');
+  clearResult('merge');
   mergeProgressWrap.classList.add('active', 'merge-active');
   updateMergeProgress(0);
 
@@ -1740,10 +2099,11 @@ mergeBtn.addEventListener('click', async () => {
     }
     updateMergeProgress(95);
     const bytes = await mergedPdf.save();
-    downloadBlob(new Blob([bytes], { type: 'application/pdf' }), `${name}.pdf`);
     updateMergeProgress(100);
-    mergeStatus.textContent = `✅ បានបញ្ចូល PDF ${total} ឯកសារជោគជ័យ!`;
-    mergeStatus.classList.add('success');
+    const blob = new Blob([bytes], { type: 'application/pdf' });
+    const fileName = `${name}.pdf`;
+    setResult('merge', blob, fileName);
+    showResultCard('merge', fileName);
     resetMergeBtn.classList.add('show');
   } catch (err) {
     console.error(err);
@@ -1762,6 +2122,8 @@ resetMergeBtn.addEventListener('click', () => {
   pdfs = []; pdfUid = 0; pdfDragSrcId = null;
   pdfInput.value = '';
   mergedNameInput.value = 'merged-document';
+  clearResult('merge');
+  hideResultCard('merge');
   mergeProgressWrap.classList.remove('active', 'merge-active');
   updateMergeProgress(0);
   mergeStatus.textContent = '';
@@ -1859,7 +2221,6 @@ async function loadSplitFile(file) {
   splitInput.value = '';
 }
 
-/* ===== Mode switching ===== */
 document.querySelectorAll('.mode-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
@@ -1875,7 +2236,6 @@ document.querySelectorAll('.mode-btn').forEach(btn => {
   });
 });
 
-/* ===== Parse skip pages ===== */
 function parseSkipList(str, total) {
   const set = new Set();
   if (!str || !str.trim()) return set;
@@ -1898,19 +2258,14 @@ function parseSkipList(str, total) {
   return set;
 }
 
-/* ===== Get pages to include ===== */
 function getSplitPages() {
   if (!splitDoc) return [];
   const total = splitPageCount;
-
   if (splitMode === 'each') {
-    // រាល់ទំព័រ
     const arr = [];
     for (let i = 0; i < total; i++) arr.push(i);
     return arr;
   }
-
-  // Range mode
   let from = parseInt(rangeFrom.value, 10);
   let to = parseInt(rangeTo.value, 10);
   if (isNaN(from)) from = 1;
@@ -1918,16 +2273,14 @@ function getSplitPages() {
   from = Math.max(1, Math.min(from, total));
   to = Math.max(1, Math.min(to, total));
   if (from > to) [from, to] = [to, from];
-
   const skipSet = parseSkipList(skipPages.value, total);
   const pages = [];
   for (let i = from; i <= to; i++) {
-    if (!skipSet.has(i)) pages.push(i - 1); // 0-based
+    if (!skipSet.has(i)) pages.push(i - 1);
   }
   return pages;
 }
 
-/* ===== Live preview ===== */
 function updatePreview() {
   if (!splitDoc || splitMode !== 'range') return;
   const pages = getSplitPages();
@@ -1937,7 +2290,6 @@ function updatePreview() {
     previewSummary.innerHTML = '';
     return;
   }
-  // បង្ហាញច្រើនបំផុត 100 ជាមុន
   const shown = pages.slice(0, 100);
   shown.forEach(p => {
     const chip = document.createElement('span');
@@ -1959,70 +2311,52 @@ rangeFrom.addEventListener('input', updatePreview);
 rangeTo.addEventListener('input', updatePreview);
 skipPages.addEventListener('input', updatePreview);
 
-/* ===== Preset buttons ===== */
 document.querySelectorAll('.preset-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     if (!splitDoc) return;
     const total = splitPageCount;
     const preset = btn.dataset.preset;
-
     if (preset === 'all') {
-      rangeFrom.value = 1;
-      rangeTo.value = total;
-      skipPages.value = '';
+      rangeFrom.value = 1; rangeTo.value = total; skipPages.value = '';
     } else if (preset === 'first-half') {
-      rangeFrom.value = 1;
-      rangeTo.value = Math.ceil(total / 2);
-      skipPages.value = '';
+      rangeFrom.value = 1; rangeTo.value = Math.ceil(total / 2); skipPages.value = '';
     } else if (preset === 'second-half') {
-      rangeFrom.value = Math.floor(total / 2) + 1;
-      rangeTo.value = total;
-      skipPages.value = '';
+      rangeFrom.value = Math.floor(total / 2) + 1; rangeTo.value = total; skipPages.value = '';
     } else if (preset === 'odd') {
-      rangeFrom.value = 1;
-      rangeTo.value = total;
+      rangeFrom.value = 1; rangeTo.value = total;
       const skips = [];
       for (let i = 2; i <= total; i += 2) skips.push(i);
       skipPages.value = skips.join(', ');
     } else if (preset === 'even') {
-      rangeFrom.value = 1;
-      rangeTo.value = total;
+      rangeFrom.value = 1; rangeTo.value = total;
       const skips = [];
       for (let i = 1; i <= total; i += 2) skips.push(i);
       skipPages.value = skips.join(', ');
-    } else if (preset === 'reverse') {
-      // បង្ហាញជាសារ
-      splitStatus.textContent = '💡 បញ្ច្រាសលំដាប់មិនទាន់គាំទ្រទេ';
-      setTimeout(() => { if (splitStatus.textContent.startsWith('💡')) splitStatus.textContent = ''; }, 2000);
-      return;
     }
     updatePreview();
   });
 });
 
-/* ===== Split action ===== */
 splitBtn.addEventListener('click', async () => {
   if (!splitDoc || !splitFile) return;
-
   const pages = getSplitPages();
   if (pages.length === 0) {
     splitStatus.textContent = '❌ គ្មានទំព័រត្រូវចម្លងទេ';
     splitStatus.classList.add('error');
     return;
   }
-
   splitBtn.disabled = true;
   splitStatus.textContent = '';
   splitStatus.classList.remove('success', 'error');
+  hideResultCard('split');
+  clearResult('split');
   splitProgressWrap.classList.add('active', 'split-active');
   updateSplitProgress(0);
 
   try {
     if (splitMode === 'each') {
-      // បំបែករាល់ទំព័រ → ទាញយកជា ZIP
       await splitEachPage();
     } else {
-      // Range mode → PDF តែមួយ
       await splitRange(pages);
     }
   } catch (err) {
@@ -2041,53 +2375,43 @@ splitBtn.addEventListener('click', async () => {
 async function splitRange(pages) {
   const baseName = splitFile.name.replace(/\.pdf$/i, '');
   updateSplitProgress(15);
-
   const newDoc = await PDFDocument.create();
   const copiedPages = await newDoc.copyPages(splitDoc, pages);
   copiedPages.forEach(p => newDoc.addPage(p));
   updateSplitProgress(80);
-
   const bytes = await newDoc.save();
   updateSplitProgress(100);
-  downloadBlob(new Blob([bytes], { type: 'application/pdf' }), `${baseName}-split.pdf`);
-
-  splitStatus.textContent = `✅ បានបំបែក ${pages.length} ទំព័រជោគជ័យ!`;
-  splitStatus.classList.add('success');
+  const blob = new Blob([bytes], { type: 'application/pdf' });
+  const fileName = `${baseName}-split.pdf`;
+  setResult('split', blob, fileName);
+  showResultCard('split', fileName);
   resetSplitBtn.classList.add('show');
 }
 
 async function splitEachPage() {
   const baseName = splitFile.name.replace(/\.pdf$/i, '');
   const total = splitPageCount;
-
-  // ប្រើ JSZip ពី CDN (load dynamically)
   await loadJSZip();
-
   const zip = new JSZip();
   const folder = zip.folder(`${baseName}-split`);
-
   for (let i = 0; i < total; i++) {
     const newDoc = await PDFDocument.create();
     const [page] = await newDoc.copyPages(splitDoc, [i]);
     newDoc.addPage(page);
     const bytes = await newDoc.save();
     folder.file(`page-${String(i + 1).padStart(3, '0')}.pdf`, bytes);
-
     updateSplitProgress(Math.round(((i + 1) / total) * 90));
     await new Promise(r => setTimeout(r, 20));
   }
-
   updateSplitProgress(95);
   const zipBlob = await zip.generateAsync({ type: 'blob' });
   updateSplitProgress(100);
-  downloadBlob(zipBlob, `${baseName}-split.zip`);
-
-  splitStatus.textContent = `✅ បានបំបែក ${total} ទំព័រជោគជ័យ! ទាញយកជា ZIP`;
-  splitStatus.classList.add('success');
+  const fileName = `${baseName}-split.zip`;
+  setResult('split', zipBlob, fileName);
+  showResultCard('split', fileName);
   resetSplitBtn.classList.add('show');
 }
 
-/* ===== Load JSZip dynamically ===== */
 let jszipLoaded = false;
 function loadJSZip() {
   return new Promise((resolve, reject) => {
@@ -2110,6 +2434,8 @@ resetSplitBtn.addEventListener('click', () => {
   skipPages.value = '';
   splitInfo.style.display = 'none';
   splitOptions.style.display = 'none';
+  clearResult('split');
+  hideResultCard('split');
   splitProgressWrap.classList.remove('active', 'split-active');
   updateSplitProgress(0);
   splitStatus.textContent = '';
@@ -2128,18 +2454,6 @@ function updateSplitProgress(p) {
   splitProgressFill.style.width = p + '%';
   splitProgressText.textContent = p + '%';
 }
-
-/* ===== Download helper ===== */
-function downloadBlob(blob, filename) {
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
 </script>
 </body>
-</html>
+ </html>
