@@ -3,10 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ឧបករណ៍ PDF</title>
+<title>PDF KH</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfjs-dist/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/canvas-confetti/1.9.2/confetti.browser.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -23,19 +25,58 @@
     --split: #06b6d4;
     --split-dark: #0891b2;
     --share: #3b82f6;
+    --accent: #f59e0b;
+
+    --bg-body: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    --bg-card: #ffffff;
+    --bg-soft: #f8fafc;
+    --bg-softer: #fafbff;
+    --bg-input: #ffffff;
+    --bg-tab: #f8fafc;
+    --bg-tab-hover: #eef2ff;
+    --bg-action: #fafbfc;
+    --bg-action-hover: #eef2ff;
+    --bg-danger-hover: #fee2e2;
+    --bg-hint: #fef3c7;
+    --bg-result: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+    --bg-info: linear-gradient(135deg, #ecfeff, #e0f2fe);
+    --bg-skip: #fef3c7;
+    --bg-preview: #f8fafc;
+
     --text-dark: #1e293b;
     --text-mid: #475569;
     --text-light: #94a3b8;
     --border: #e2e8f0;
-    --surface: #ffffff;
     --radius: 16px;
     --radius-sm: 10px;
+  }
+
+  body.dark {
+    --bg-body: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
+    --bg-card: #1e293b;
+    --bg-soft: #0f172a;
+    --bg-softer: #172033;
+    --bg-input: #0f172a;
+    --bg-tab: #0f172a;
+    --bg-tab-hover: #312e81;
+    --bg-action: #172033;
+    --bg-action-hover: #312e81;
+    --bg-danger-hover: #7f1d1d;
+    --bg-hint: #422006;
+    --bg-result: linear-gradient(135deg, #052e16, #064e3b);
+    --bg-info: linear-gradient(135deg, #083344, #164e63);
+    --bg-skip: #422006;
+    --bg-preview: #0f172a;
+    --text-dark: #f1f5f9;
+    --text-mid: #cbd5e1;
+    --text-light: #94a3b8;
+    --border: #334155;
   }
 
   html { scroll-behavior: smooth; }
   body {
     font-family: 'Kantumruy Pro', 'Khmer OS', 'Khmer OS Battambang', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    background: var(--bg-body);
     background-attachment: fixed;
     min-height: 100vh;
     padding: 24px 16px;
@@ -43,27 +84,49 @@
     -webkit-user-select: none;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
+    color: var(--text-dark);
+    transition: background 0.4s, color 0.3s;
   }
 
+  .top-bar {
+    max-width: 820px;
+    margin: 0 auto 12px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+  .top-btn {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    color: #fff; font-size: 18px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .top-btn:hover { background: rgba(255, 255, 255, 0.4); }
+  .top-btn:active { transform: scale(0.94); }
+  .top-btn .lang-label { font-size: 12px; font-weight: 700; font-family: inherit; }
+
   .container {
-    background: #ffffff;
+    background: var(--bg-card);
     border-radius: 24px;
     padding: 0;
     max-width: 820px;
     margin: 0 auto;
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
     overflow: hidden;
+    transition: background 0.3s;
   }
 
   .header { text-align: center; padding: 32px 32px 20px; }
   .header .icon-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    display: inline-flex; align-items: center; justify-content: center;
     width: 68px; height: 68px;
     background: linear-gradient(135deg, var(--primary), var(--secondary));
-    border-radius: 20px;
-    font-size: 32px;
+    border-radius: 20px; font-size: 32px;
     margin-bottom: 14px;
     box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
   }
@@ -71,29 +134,26 @@
   .header p { color: var(--text-light); font-size: 13px; }
 
   .tabs {
-    display: flex;
-    gap: 6px;
+    display: flex; gap: 6px;
     padding: 0 32px 24px;
     border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: none;
   }
+  .tabs::-webkit-scrollbar { display: none; }
   .tab {
-    flex: 1;
+    flex: 1; min-width: 100px;
     padding: 12px 8px;
-    background: #f8fafc;
+    background: var(--bg-tab);
     border: 2px solid transparent;
     border-radius: 12px;
-    font-family: inherit;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text-mid);
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    transition: background-color 0.2s, color 0.2s;
+    font-family: inherit; font-size: 13px; font-weight: 600;
+    color: var(--text-mid); cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    transition: background 0.2s, color 0.2s, transform 0.15s;
   }
-  .tab:hover { background: #eef2ff; color: var(--primary); }
+  .tab:hover { background: var(--bg-tab-hover); color: var(--primary); }
+  .tab:active { transform: scale(0.97); }
   .tab .tab-icon { font-size: 20px; }
   .tab.active {
     background: linear-gradient(135deg, var(--primary), var(--primary-dark));
@@ -108,24 +168,29 @@
     background: linear-gradient(135deg, var(--split), var(--split-dark));
     box-shadow: 0 6px 16px rgba(6, 182, 212, 0.3);
   }
+  .tab.active[data-tab="history"] {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    box-shadow: 0 6px 16px rgba(139, 92, 246, 0.3);
+  }
 
   .panel { padding: 28px 32px 32px; display: none; }
-  .panel.active { display: block; }
+  .panel.active {
+    display: block;
+    animation: panelIn 0.3s ease;
+  }
+  @keyframes panelIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
 
   .form-group { margin-bottom: 22px; }
   .form-group label {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    display: flex; align-items: center; gap: 8px;
     margin-bottom: 10px;
-    color: var(--text-mid);
-    font-weight: 600;
-    font-size: 14px;
+    color: var(--text-mid); font-weight: 600; font-size: 14px;
   }
   .form-group label::before {
-    content: '';
-    width: 4px;
-    height: 16px;
+    content: ''; width: 4px; height: 16px;
     background: linear-gradient(180deg, var(--primary), var(--secondary));
     border-radius: 4px;
   }
@@ -133,13 +198,9 @@
   .input-wrap { position: relative; }
   .input-wrap::after {
     content: '📝';
-    position: absolute;
-    right: 16px;
-    top: 50%;
+    position: absolute; right: 16px; top: 50%;
     transform: translateY(-50%);
-    font-size: 18px;
-    pointer-events: none;
-    opacity: 0.5;
+    font-size: 18px; pointer-events: none; opacity: 0.5;
   }
 
   input[type="text"], input[type="number"] {
@@ -147,24 +208,17 @@
     padding: 14px 48px 14px 16px;
     border: 2px solid var(--border);
     border-radius: var(--radius-sm);
-    font-size: 16px;
-    font-family: inherit;
-    background: var(--surface);
-    color: var(--text-dark);
+    font-size: 16px; font-family: inherit;
+    background: var(--bg-input); color: var(--text-dark);
     transition: border-color 0.2s, box-shadow 0.2s;
-    -webkit-user-select: text;
-    user-select: text;
+    -webkit-user-select: text; user-select: text;
     font-weight: 500;
   }
   input[type="text"]:focus, input[type="number"]:focus {
-    outline: none;
-    border-color: var(--primary);
+    outline: none; border-color: var(--primary);
     box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.12);
   }
-  input[type="text"]::placeholder, input[type="number"]::placeholder {
-    color: var(--text-light);
-    font-weight: 400;
-  }
+  input::placeholder { color: var(--text-light); font-weight: 400; }
 
   .file-drop {
     position: relative;
@@ -173,21 +227,20 @@
     padding: 32px 20px;
     text-align: center;
     cursor: pointer;
-    background: #fafbff;
-    transition: border-color 0.2s, background-color 0.2s;
+    background: var(--bg-softer);
+    transition: border-color 0.2s, background 0.2s;
   }
-  .file-drop:hover { border-color: var(--primary); background: #f0f2ff; }
-  .file-drop.dragover { border-color: var(--primary); background: #e8ebff; }
+  .file-drop:hover { border-color: var(--primary); background: var(--bg-tab-hover); }
+  .file-drop.dragover {
+    border-color: var(--primary);
+    background: var(--bg-tab-hover);
+  }
   .file-drop input { display: none; }
-
   .file-drop .drop-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    display: inline-flex; align-items: center; justify-content: center;
     width: 60px; height: 60px;
     background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-    border-radius: 50%;
-    font-size: 28px;
+    border-radius: 50%; font-size: 28px;
     margin-bottom: 12px;
     color: #fff;
     box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
@@ -205,773 +258,484 @@
 
   .thumbs-header {
     display: none;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 20px;
-    margin-bottom: 12px;
-    padding: 0 4px;
+    justify-content: space-between; align-items: center;
+    margin-top: 20px; margin-bottom: 12px; padding: 0 4px;
   }
   .thumbs-header.show { display: flex; }
   .thumbs-header .count { font-size: 13px; color: var(--text-mid); font-weight: 600; }
   .thumbs-header .count span {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 22px;
-    height: 22px;
-    padding: 0 7px;
-    background: var(--primary);
-    color: #fff;
-    border-radius: 11px;
-    font-size: 12px;
-    margin-left: 6px;
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 22px; height: 22px; padding: 0 7px;
+    background: var(--primary); color: #fff;
+    border-radius: 11px; font-size: 12px; margin-left: 6px;
   }
   .thumbs-header .clear-all {
-    background: none;
-    border: none;
-    color: var(--danger);
-    font-size: 13px;
-    cursor: pointer;
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-weight: 600;
-    font-family: inherit;
-    transition: background-color 0.15s;
+    background: none; border: none; color: var(--danger);
+    font-size: 13px; cursor: pointer;
+    padding: 4px 10px; border-radius: 6px;
+    font-weight: 600; font-family: inherit;
+    transition: background 0.15s;
   }
-  .thumbs-header .clear-all:hover { background: #fee2e2; }
+  .thumbs-header .clear-all:hover { background: var(--bg-danger-hover); }
 
   .thumbs {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 14px;
   }
-
   .thumb {
     position: relative;
     border: 2px solid var(--border);
     border-radius: var(--radius-sm);
     overflow: hidden;
-    background: var(--surface);
+    background: var(--bg-card);
     cursor: grab;
-    transition: border-color 0.15s, box-shadow 0.15s;
+    transition: border-color 0.15s;
     -webkit-user-select: none;
     user-select: none;
     -webkit-touch-callout: none;
   }
   .thumb:active { cursor: grabbing; }
-  .thumb:hover { border-color: var(--primary); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); }
+  .thumb:hover { border-color: var(--primary); }
   .thumb.dragging { opacity: 0.4; border-color: var(--primary); border-style: dashed; }
-  .thumb.drag-over { border-color: var(--secondary); border-style: dashed; background: #fdf2f8; }
-
+  .thumb.drag-over { border-color: var(--secondary); border-style: dashed; background: rgba(236, 72, 153, 0.08); }
   .thumb .img-wrap {
-    width: 100%;
-    height: 120px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #f8fafc;
-    overflow: hidden;
-    pointer-events: none;
+    width: 100%; height: 120px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--bg-preview);
+    overflow: hidden; pointer-events: none;
   }
   .thumb img { max-width: 100%; max-height: 100%; display: block; pointer-events: none; }
   .thumb .num {
-    position: absolute;
-    top: 8px; left: 8px;
-    background: var(--primary);
-    color: #fff;
-    font-size: 11px;
-    font-weight: 700;
-    min-width: 22px;
-    height: 22px;
-    padding: 0 6px;
+    position: absolute; top: 8px; left: 8px;
+    background: var(--primary); color: #fff;
+    font-size: 11px; font-weight: 700;
+    min-width: 22px; height: 22px; padding: 0 6px;
     border-radius: 11px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 2;
-    pointer-events: none;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 2; pointer-events: none;
   }
   .thumb .drag-hint {
-    position: absolute;
-    top: 8px; right: 8px;
-    background: rgba(15, 23, 42, 0.7);
-    color: #fff;
-    font-size: 12px;
-    width: 22px;
-    height: 22px;
+    position: absolute; top: 8px; right: 8px;
+    background: rgba(15, 23, 42, 0.7); color: #fff;
+    font-size: 12px; width: 22px; height: 22px;
     border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 2;
-    pointer-events: none;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 2; pointer-events: none;
   }
   .thumb .actions {
-    display: flex;
-    justify-content: space-around;
-    padding: 6px 4px;
-    background: #fafbfc;
+    display: flex; justify-content: space-around;
+    padding: 6px 4px; background: var(--bg-action);
     border-top: 1px solid var(--border);
   }
   .thumb .actions button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
-    width: 32px;
-    height: 32px;
+    background: none; border: none; cursor: pointer;
+    font-size: 16px; width: 32px; height: 32px;
     border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.15s;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s;
     color: var(--text-mid);
   }
-  .thumb .actions button:hover { background: #eef2ff; }
-  .thumb .actions button[data-act="del"]:hover { background: #fee2e2; }
+  .thumb .actions button:hover { background: var(--bg-action-hover); }
+  .thumb .actions button[data-act="del"]:hover { background: var(--bg-danger-hover); }
 
   .pdf-list { display: flex; flex-direction: column; gap: 10px; margin-top: 6px; }
   .pdf-item {
     position: relative;
-    display: flex;
-    align-items: center;
-    gap: 14px;
+    display: flex; align-items: center; gap: 14px;
     padding: 14px 16px;
     border: 2px solid var(--border);
     border-radius: var(--radius-sm);
-    background: var(--surface);
+    background: var(--bg-card);
     cursor: grab;
-    transition: border-color 0.15s, box-shadow 0.15s;
-    -webkit-user-select: none;
-    user-select: none;
-    -webkit-touch-callout: none;
+    transition: border-color 0.15s;
+    -webkit-user-select: none; user-select: none;
   }
   .pdf-item:active { cursor: grabbing; }
-  .pdf-item:hover { border-color: var(--primary); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06); }
+  .pdf-item:hover { border-color: var(--primary); }
   .pdf-item.dragging { opacity: 0.4; border-color: var(--primary); border-style: dashed; }
-  .pdf-item.drag-over { border-color: var(--secondary); border-style: dashed; background: #fdf2f8; }
+  .pdf-item.drag-over { border-color: var(--secondary); border-style: dashed; background: rgba(236, 72, 153, 0.08); }
   .pdf-item .pdf-icon {
-    flex-shrink: 0;
-    width: 44px; height: 44px;
+    flex-shrink: 0; width: 44px; height: 44px;
     background: linear-gradient(135deg, #ef4444, #dc2626);
     border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
-    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; color: #fff;
     box-shadow: 0 4px 10px rgba(239, 68, 68, 0.25);
   }
   .pdf-item .pdf-info { flex: 1; min-width: 0; }
   .pdf-item .pdf-name {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text-dark);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    font-size: 14px; font-weight: 600; color: var(--text-dark);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     margin-bottom: 3px;
   }
   .pdf-item .pdf-meta { font-size: 12px; color: var(--text-light); display: flex; align-items: center; gap: 8px; }
   .pdf-item .pdf-num {
-    position: absolute;
-    top: -6px; left: -6px;
-    background: var(--primary);
-    color: #fff;
-    font-size: 11px;
-    font-weight: 700;
-    min-width: 22px;
-    height: 22px;
-    padding: 0 6px;
+    position: absolute; top: -6px; left: -6px;
+    background: var(--primary); color: #fff;
+    font-size: 11px; font-weight: 700;
+    min-width: 22px; height: 22px; padding: 0 6px;
     border-radius: 11px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
     box-shadow: 0 2px 6px rgba(99, 102, 241, 0.4);
   }
   .pdf-item .drag-handle { flex-shrink: 0; color: var(--text-light); font-size: 18px; padding: 4px; pointer-events: none; }
   .pdf-item .remove-btn {
-    flex-shrink: 0;
-    background: none;
-    border: none;
-    width: 34px; height: 34px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 16px;
-    color: var(--text-mid);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.15s, color 0.15s;
+    flex-shrink: 0; background: none; border: none;
+    width: 34px; height: 34px; border-radius: 8px;
+    cursor: pointer; font-size: 16px; color: var(--text-mid);
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s, color 0.15s;
   }
-  .pdf-item .remove-btn:hover { background: #fee2e2; color: var(--danger); }
-
-  .split-info {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 16px;
-    background: linear-gradient(135deg, #ecfeff, #e0f2fe);
-    border: 2px solid #a5f3fc;
-    border-radius: var(--radius-sm);
-    margin-bottom: 22px;
-  }
-  .split-info .info-icon {
-    flex-shrink: 0;
-    width: 46px; height: 46px;
-    background: linear-gradient(135deg, var(--split), var(--split-dark));
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
-    color: #fff;
-    box-shadow: 0 4px 10px rgba(6, 182, 212, 0.3);
-  }
-  .split-info .info-body { flex: 1; min-width: 0; }
-  .split-info .info-title { font-size: 14px; font-weight: 700; color: #0e7490; margin-bottom: 3px; }
-  .split-info .info-sub {
-    font-size: 13px;
-    color: #155e75;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .split-info .info-badge {
-    flex-shrink: 0;
-    padding: 6px 12px;
-    background: var(--split);
-    color: #fff;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 700;
-  }
-
-  .mode-selector {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 18px;
-  }
-  .mode-btn {
-    padding: 14px;
-    border: 2px solid var(--border);
-    border-radius: var(--radius-sm);
-    background: #fff;
-    font-family: inherit;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text-mid);
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-    transition: all 0.2s;
-  }
-  .mode-btn .mode-icon { font-size: 22px; }
-  .mode-btn:hover { border-color: var(--split); background: #ecfeff; }
-  .mode-btn.active {
-    border-color: var(--split);
-    background: linear-gradient(135deg, #ecfeff, #cffafe);
-    color: var(--split-dark);
-    box-shadow: 0 4px 12px rgba(6, 182, 212, 0.15);
-  }
-
-  .range-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
-    margin-bottom: 16px;
-  }
-  .range-field label {
-    display: block;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text-mid);
-    margin-bottom: 6px;
-  }
-  .range-field input {
-    text-align: center;
-    padding: 12px;
-    font-weight: 700;
-  }
-
-  .skip-wrap {
-    margin-bottom: 18px;
-    padding: 14px;
-    background: #fef3c7;
-    border-radius: var(--radius-sm);
-    border: 1px solid #fde68a;
-  }
-  .skip-wrap label {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 13px;
-    font-weight: 600;
-    color: #92400e;
-    margin-bottom: 8px;
-  }
-  .skip-wrap input {
-    background: #fff;
-    padding: 10px 14px;
-    font-size: 14px;
-  }
-  .skip-wrap .hint-text {
-    font-size: 12px;
-    color: #a16207;
-    margin-top: 6px;
-    font-weight: 500;
-  }
-
-  .presets {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-bottom: 18px;
-  }
-  .preset-btn {
-    padding: 6px 12px;
-    background: #f1f5f9;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    font-family: inherit;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--text-mid);
-    cursor: pointer;
-    transition: background-color 0.15s, color 0.15s;
-  }
-  .preset-btn:hover {
-    background: var(--split);
-    color: #fff;
-    border-color: var(--split);
-  }
-
-  .preview-box {
-    padding: 14px;
-    background: #f8fafc;
-    border: 1px dashed var(--border);
-    border-radius: var(--radius-sm);
-    margin-bottom: 8px;
-  }
-  .preview-label {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--text-light);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 8px;
-  }
-  .preview-pages {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    max-height: 130px;
-    overflow-y: auto;
-  }
-  .page-chip {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 34px;
-    height: 34px;
-    padding: 0 8px;
-    background: var(--split);
-    color: #fff;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 700;
-  }
-  .preview-empty { font-size: 13px; color: var(--text-light); font-style: italic; }
-  .preview-summary {
-    margin-top: 10px;
-    padding-top: 10px;
-    border-top: 1px solid var(--border);
-    font-size: 13px;
-    color: var(--text-mid);
-    font-weight: 600;
-  }
-  .preview-summary strong { color: var(--split); }
+  .pdf-item .remove-btn:hover { background: var(--bg-danger-hover); color: var(--danger); }
 
   .btn-main {
-    width: 100%;
-    padding: 16px;
+    width: 100%; padding: 16px;
     background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-    color: #fff;
-    border: none;
-    border-radius: var(--radius-sm);
-    font-size: 16px;
-    font-weight: 700;
-    font-family: inherit;
-    cursor: pointer;
-    margin-top: 14px;
+    color: #fff; border: none; border-radius: var(--radius-sm);
+    font-size: 16px; font-weight: 700; font-family: inherit;
+    cursor: pointer; margin-top: 14px;
     box-shadow: 0 6px 16px rgba(99, 102, 241, 0.3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
     transition: box-shadow 0.2s, transform 0.15s;
   }
   .btn-main:hover:not(:disabled) { box-shadow: 0 10px 24px rgba(99, 102, 241, 0.4); }
   .btn-main:active:not(:disabled) { transform: scale(0.98); }
   .btn-main:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; background: #cbd5e1; }
-  .btn-main.merge {
-    background: linear-gradient(135deg, #ef4444, #dc2626);
-    box-shadow: 0 6px 16px rgba(239, 68, 68, 0.3);
-  }
-  .btn-main.merge:hover:not(:disabled) { box-shadow: 0 10px 24px rgba(239, 68, 68, 0.4); }
+  .btn-main.merge { background: linear-gradient(135deg, #ef4444, #dc2626); box-shadow: 0 6px 16px rgba(239, 68, 68, 0.3); }
   .btn-main.merge:disabled { background: #cbd5e1; }
-  .btn-main.split {
-    background: linear-gradient(135deg, var(--split), var(--split-dark));
-    box-shadow: 0 6px 16px rgba(6, 182, 212, 0.3);
-  }
-  .btn-main.split:hover:not(:disabled) { box-shadow: 0 10px 24px rgba(6, 182, 212, 0.4); }
+  .btn-main.split { background: linear-gradient(135deg, var(--split), var(--split-dark)); box-shadow: 0 6px 16px rgba(6, 182, 212, 0.3); }
   .btn-main.split:disabled { background: #cbd5e1; }
   .btn-main .icon { font-size: 20px; }
 
   .btn-reset {
-    width: 100%;
-    padding: 15px;
-    background: #fff;
-    color: var(--primary);
-    border: 2px solid var(--primary);
-    border-radius: var(--radius-sm);
-    font-size: 15px;
-    font-weight: 700;
-    font-family: inherit;
-    cursor: pointer;
-    margin-top: 12px;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    transition: background-color 0.2s, color 0.2s;
+    width: 100%; padding: 15px;
+    background: var(--bg-card); color: var(--primary);
+    border: 2px solid var(--primary); border-radius: var(--radius-sm);
+    font-size: 15px; font-weight: 700; font-family: inherit;
+    cursor: pointer; margin-top: 12px;
+    display: none; align-items: center; justify-content: center; gap: 8px;
+    transition: background 0.2s, color 0.2s;
   }
   .btn-reset:hover { background: var(--primary); color: #fff; }
   .btn-reset.show { display: flex; }
   .btn-reset.split { color: var(--split); border-color: var(--split); }
   .btn-reset.split:hover { background: var(--split); color: #fff; }
 
-  /* ===== Result Card ===== */
   .result-card {
-    display: none;
-    margin-top: 18px;
-    padding: 20px;
-    background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+    display: none; margin-top: 18px; padding: 20px;
+    background: var(--bg-result);
     border: 2px solid #86efac;
     border-radius: var(--radius);
-    animation: resultIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: resultIn 0.3s ease;
   }
   .result-card.show { display: block; }
   @keyframes resultIn {
-    from { opacity: 0; transform: translateY(10px); }
+    from { opacity: 0; transform: translateY(8px); }
     to   { opacity: 1; transform: translateY(0); }
   }
-
-  .result-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 16px;
-  }
+  .result-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
   .result-header .check-icon {
-    flex-shrink: 0;
-    width: 46px; height: 46px;
+    flex-shrink: 0; width: 46px; height: 46px;
     background: linear-gradient(135deg, var(--success), var(--success-dark));
     border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; color: #fff;
     box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35);
   }
   .result-header .result-title { flex: 1; min-width: 0; }
-  .result-header .result-title h3 {
-    font-size: 16px;
-    font-weight: 700;
-    color: #065f46;
-    margin-bottom: 4px;
-  }
-  .result-header .result-title p {
-    font-size: 13px;
-    color: #047857;
-    font-weight: 500;
-  }
+  .result-header .result-title h3 { font-size: 16px; font-weight: 700; color: var(--success-dark); margin-bottom: 4px; }
+  .result-header .result-title p { font-size: 13px; color: var(--success-dark); opacity: 0.85; font-weight: 500; }
   .result-header .result-name {
-    font-size: 13px;
-    color: #065f46;
-    font-weight: 600;
-    background: #d1fae5;
-    padding: 4px 10px;
-    border-radius: 8px;
-    display: inline-block;
-    margin-top: 4px;
-    max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    font-size: 13px; color: var(--success-dark); font-weight: 600;
+    background: rgba(16, 185, 129, 0.15); padding: 4px 10px;
+    border-radius: 8px; display: inline-block; margin-top: 4px;
+    max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
 
-  .result-actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-  }
+  .result-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .result-btn {
-    padding: 14px 16px;
-    border: none;
-    border-radius: var(--radius-sm);
-    font-family: inherit;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
+    padding: 14px 16px; border: none; border-radius: var(--radius-sm);
+    font-family: inherit; font-size: 14px; font-weight: 700;
+    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
     transition: box-shadow 0.2s, transform 0.15s;
   }
   .result-btn:active { transform: scale(0.97); }
   .result-btn .icon { font-size: 18px; }
-
   .result-btn.download {
     background: linear-gradient(135deg, var(--success), var(--success-dark));
-    color: #fff;
-    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35);
+    color: #fff; box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35);
   }
   .result-btn.download:hover { box-shadow: 0 10px 24px rgba(16, 185, 129, 0.5); }
   .result-btn.share {
-    background: #fff;
-    color: var(--share);
+    background: var(--bg-card); color: var(--share);
     border: 2px solid var(--share);
   }
   .result-btn.share:hover {
-    background: var(--share);
-    color: #fff;
+    background: var(--share); color: #fff;
     box-shadow: 0 6px 16px rgba(59, 130, 246, 0.35);
   }
 
   .share-menu {
-    display: none;
-    margin-top: 12px;
-    padding: 12px;
-    background: #fff;
-    border: 2px solid var(--border);
+    display: none; margin-top: 12px; padding: 12px;
+    background: var(--bg-card); border: 2px solid var(--border);
     border-radius: var(--radius-sm);
-    animation: resultIn 0.25s ease;
   }
   .share-menu.show { display: block; }
   .share-menu .share-title {
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--text-light);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 10px;
-    text-align: center;
+    font-size: 12px; font-weight: 700; color: var(--text-light);
+    text-transform: uppercase; letter-spacing: 0.5px;
+    margin-bottom: 10px; text-align: center;
   }
-  .share-options {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
-  }
+  .share-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
   .share-option {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    padding: 10px 6px;
-    background: #f8fafc;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    cursor: pointer;
-    font-family: inherit;
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--text-mid);
-    transition: background-color 0.15s, border-color 0.15s;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    padding: 12px 6px; background: var(--bg-soft);
+    border: 1px solid var(--border); border-radius: 10px;
+    cursor: pointer; font-family: inherit; font-size: 11px;
+    font-weight: 600; color: var(--text-mid);
+    transition: background 0.15s, border-color 0.15s;
   }
-  .share-option:hover {
-    background: #eef2ff;
-    border-color: var(--primary);
-  }
+  .share-option:hover { background: var(--bg-action-hover); border-color: var(--primary); }
   .share-option .share-icon { font-size: 22px; line-height: 1; }
 
   .progress-wrap { margin-top: 18px; display: none; }
   .progress-wrap.active { display: block; }
   .progress-bar {
-    width: 100%;
-    height: 10px;
-    background: #eef2f7;
-    border-radius: 10px;
-    overflow: hidden;
+    width: 100%; height: 10px; background: var(--bg-soft);
+    border-radius: 10px; overflow: hidden;
   }
   .progress-fill {
-    height: 100%;
-    width: 0%;
+    height: 100%; width: 0%;
     background: linear-gradient(90deg, var(--primary), var(--secondary));
-    transition: width 0.25s;
-    border-radius: 10px;
+    transition: width 0.25s; border-radius: 10px;
   }
   .progress-wrap.merge-active .progress-fill { background: linear-gradient(90deg, #ef4444, #f59e0b); }
   .progress-wrap.split-active .progress-fill { background: linear-gradient(90deg, var(--split), #22d3ee); }
   .progress-text {
-    text-align: center;
-    margin-top: 10px;
-    font-size: 14px;
-    color: var(--text-mid);
-    font-weight: 700;
+    text-align: center; margin-top: 10px;
+    font-size: 14px; color: var(--text-mid); font-weight: 700;
   }
   .progress-text .pct { color: var(--primary); font-size: 16px; }
   .progress-wrap.merge-active .progress-text .pct { color: var(--merge); }
   .progress-wrap.split-active .progress-text .pct { color: var(--split); }
 
   .status {
-    text-align: center;
-    margin-top: 14px;
-    font-size: 14px;
-    color: var(--text-mid);
-    min-height: 22px;
-    font-weight: 500;
+    text-align: center; margin-top: 14px;
+    font-size: 14px; color: var(--text-mid);
+    min-height: 22px; font-weight: 500;
   }
   .status.success {
-    color: var(--success);
-    font-weight: 700;
-    padding: 12px;
-    background: #ecfdf5;
-    border-radius: var(--radius-sm);
-    border: 1px solid #a7f3d0;
+    color: var(--success); font-weight: 700;
+    padding: 12px; background: rgba(16, 185, 129, 0.1);
+    border-radius: var(--radius-sm); border: 1px solid #a7f3d0;
   }
   .status.error { color: var(--danger); font-weight: 600; }
 
   .hint-bar {
-    display: none;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    margin-top: 12px;
-    padding: 10px;
-    background: #fef3c7;
-    border-radius: var(--radius-sm);
-    font-size: 13px;
-    color: #92400e;
-    font-weight: 500;
+    display: none; align-items: center; justify-content: center; gap: 6px;
+    margin-top: 12px; padding: 10px;
+    background: var(--bg-hint); border-radius: var(--radius-sm);
+    font-size: 13px; color: #92400e; font-weight: 500;
   }
+  body.dark .hint-bar { color: #fbbf24; }
   .hint-bar.show { display: flex; }
 
+  .history-list { display: flex; flex-direction: column; gap: 10px; }
+  .history-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px; background: var(--bg-softer);
+    border: 2px solid var(--border); border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  .history-item:hover { border-color: var(--primary); }
+  .history-item .hist-icon {
+    flex-shrink: 0; width: 44px; height: 44px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; color: #fff;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  }
+  .history-item .hist-icon.convert { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
+  .history-item .hist-icon.merge { background: linear-gradient(135deg, #ef4444, #dc2626); }
+  .history-item .hist-icon.split { background: linear-gradient(135deg, var(--split), var(--split-dark)); }
+  .history-item .hist-info { flex: 1; min-width: 0; }
+  .history-item .hist-name {
+    font-size: 14px; font-weight: 600; color: var(--text-dark);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    margin-bottom: 3px;
+  }
+  .history-item .hist-meta {
+    font-size: 12px; color: var(--text-light);
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  }
+  .history-item .hist-actions { display: flex; gap: 4px; flex-shrink: 0; }
+  .history-item .hist-btn {
+    width: 34px; height: 34px;
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 8px; cursor: pointer; font-size: 15px;
+    color: var(--text-mid);
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s, color 0.15s;
+  }
+  .history-item .hist-btn:hover {
+    background: var(--primary); color: #fff;
+    border-color: var(--primary);
+  }
+  .history-item .hist-btn.danger:hover {
+    background: var(--danger); border-color: var(--danger);
+  }
+
+  .btn-clear-history {
+    width: 100%; padding: 12px;
+    background: transparent; color: var(--danger);
+    border: 2px solid var(--danger); border-radius: var(--radius-sm);
+    font-family: inherit; font-size: 14px; font-weight: 700;
+    cursor: pointer; margin-top: 16px;
+    transition: background 0.2s, color 0.2s;
+  }
+  .btn-clear-history:hover { background: var(--danger); color: #fff; }
+
+  .empty-state {
+    text-align: center; padding: 40px 20px;
+    color: var(--text-light); font-size: 14px;
+  }
+  .empty-state .big-icon {
+    font-size: 60px; margin-bottom: 12px;
+    display: block; opacity: 0.5;
+  }
+
+  .preview-modal {
+    display: none; position: fixed; inset: 0;
+    background: rgba(15, 23, 42, 0.92);
+    z-index: 1100; align-items: center; justify-content: center;
+    padding: 16px;
+  }
+  .preview-modal.active { display: flex; }
+  .preview-modal-box {
+    background: var(--bg-card); border-radius: 20px;
+    width: 100%; max-width: 900px; height: 92vh;
+    display: flex; flex-direction: column; overflow: hidden;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+  }
+  .preview-modal-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 16px 20px; border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .preview-modal-header .preview-title {
+    font-size: 15px; font-weight: 700; color: var(--text-dark);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    flex: 1; margin-right: 12px;
+  }
+  .preview-modal-header .preview-actions { display: flex; gap: 8px; flex-shrink: 0; }
+  .preview-modal-header .pv-btn {
+    width: 40px; height: 40px; border-radius: 10px;
+    background: var(--bg-soft); border: 1px solid var(--border);
+    color: var(--text-mid); cursor: pointer; font-size: 17px;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s, color 0.15s;
+  }
+  .preview-modal-header .pv-btn:hover {
+    background: var(--primary); color: #fff; border-color: var(--primary);
+  }
+  .preview-modal-header .pv-btn.close:hover {
+    background: var(--danger); border-color: var(--danger);
+  }
+  .preview-modal-body {
+    flex: 1; overflow: auto; background: #334155;
+    display: flex; justify-content: center; align-items: flex-start;
+    padding: 16px; position: relative;
+  }
+  .preview-canvas-wrap {
+    display: flex; flex-direction: column;
+    gap: 12px; align-items: center;
+  }
+  .preview-canvas-wrap canvas {
+    max-width: 100%; box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+    background: #fff; border-radius: 4px;
+  }
+  .preview-loading {
+    color: #cbd5e1; text-align: center; padding: 40px; font-size: 14px;
+  }
+  .preview-loading .spinner {
+    width: 40px; height: 40px;
+    border: 4px solid rgba(255,255,255,0.15);
+    border-top-color: #fff; border-radius: 50%;
+    margin: 0 auto 16px;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
   .modal {
-    display: none;
-    position: fixed;
-    inset: 0;
+    display: none; position: fixed; inset: 0;
     background: rgba(15, 23, 42, 0.85);
-    z-index: 1000;
-    align-items: center;
-    justify-content: center;
+    z-index: 1000; align-items: center; justify-content: center;
     padding: 16px;
   }
   .modal.active { display: flex; }
   .modal-box {
-    background: #fff;
-    border-radius: 20px;
-    padding: 22px;
-    max-width: 820px;
-    width: 100%;
-    max-height: 96vh;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+    background: var(--bg-card); border-radius: 20px;
+    padding: 22px; max-width: 820px; width: 100%; max-height: 96vh;
+    display: flex; flex-direction: column;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.5);
   }
-
   .modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-    padding-bottom: 14px;
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 16px; padding-bottom: 14px;
     border-bottom: 1px solid var(--border);
   }
   .modal-header h3 {
-    color: var(--text-dark);
-    font-size: 17px;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    color: var(--text-dark); font-size: 17px; font-weight: 700;
+    display: flex; align-items: center; gap: 8px;
   }
   .modal-header .badge {
-    font-size: 12px;
-    background: var(--primary);
-    color: #fff;
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-weight: 600;
+    font-size: 12px; background: var(--primary); color: #fff;
+    padding: 4px 10px; border-radius: 20px; font-weight: 600;
   }
-
   .crop-toolbar {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 14px;
-    justify-content: center;
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin-bottom: 14px; justify-content: center;
   }
   .crop-toolbar button {
     padding: 8px 14px;
-    border: 1.5px solid var(--border);
-    background: #fff;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 13px;
-    font-family: inherit;
-    font-weight: 600;
-    color: var(--text-mid);
-    transition: background-color 0.15s, color 0.15s, border-color 0.15s;
-    display: flex;
-    align-items: center;
-    gap: 6px;
+    border: 1.5px solid var(--border); background: var(--bg-card);
+    border-radius: 10px; cursor: pointer; font-size: 13px;
+    font-family: inherit; font-weight: 600; color: var(--text-mid);
+    transition: all 0.15s;
+    display: flex; align-items: center; gap: 6px;
   }
-  .crop-toolbar button:hover { background: #eef2ff; border-color: var(--primary); color: var(--primary); }
-  .crop-toolbar button.active { background: var(--primary); color: #fff; border-color: transparent; }
-
+  .crop-toolbar button:hover {
+    background: var(--bg-action-hover);
+    border-color: var(--primary); color: var(--primary);
+  }
+  .crop-toolbar button.active {
+    background: var(--primary); color: #fff; border-color: transparent;
+  }
   .crop-area {
-    flex: 1;
-    min-height: 320px;
-    max-height: 58vh;
-    background: #0f172a;
-    border-radius: 14px;
+    flex: 1; min-height: 320px; max-height: 58vh;
+    background: #0f172a; border-radius: 14px;
     overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
+    display: flex; align-items: center; justify-content: center;
   }
   .crop-area img { max-width: 100%; max-height: 100%; display: block; }
-
   .modal-footer {
-    display: flex;
-    gap: 10px;
-    margin-top: 16px;
-    justify-content: flex-end;
+    display: flex; gap: 10px; margin-top: 16px; justify-content: flex-end;
   }
   .modal-footer button {
-    padding: 12px 26px;
-    border: none;
-    border-radius: 10px;
-    font-size: 14px;
-    font-weight: 700;
-    font-family: inherit;
+    padding: 12px 26px; border: none; border-radius: 10px;
+    font-size: 14px; font-weight: 700; font-family: inherit;
     cursor: pointer;
-    transition: background-color 0.15s, box-shadow 0.15s;
-    display: flex;
-    align-items: center;
-    gap: 6px;
+    transition: background 0.15s;
+    display: flex; align-items: center; gap: 6px;
   }
-  .btn-cancel { background: #f1f5f9; color: var(--text-mid); }
-  .btn-cancel:hover { background: #e2e8f0; }
-  .btn-ok { background: var(--primary); color: #fff; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3); }
-  .btn-ok:hover { box-shadow: 0 6px 18px rgba(99, 102, 241, 0.4); }
+  .btn-cancel { background: var(--bg-soft); color: var(--text-mid); }
+  .btn-cancel:hover { background: var(--border); }
+  .btn-ok {
+    background: var(--primary); color: #fff;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+  }
 
   .cropper-view-box {
     outline: 2px solid #fff !important;
@@ -982,37 +746,17 @@
   .cropper-point {
     background-color: #fff !important;
     border: 2px solid var(--primary) !important;
-    width: 12px !important;
-    height: 12px !important;
-    opacity: 1 !important;
-    border-radius: 50%;
+    width: 12px !important; height: 12px !important;
+    opacity: 1 !important; border-radius: 50%;
   }
-  .cropper-point.point-se { right: -7px !important; bottom: -7px !important; }
-  .cropper-point.point-sw { left: -7px !important; bottom: -7px !important; }
-  .cropper-point.point-nw { left: -7px !important; top: -7px !important; }
-  .cropper-point.point-ne { right: -7px !important; top: -7px !important; }
-  .cropper-point.point-n,
-  .cropper-point.point-s { height: 8px !important; width: 28px !important; border-radius: 4px !important; }
-  .cropper-point.point-w,
-  .cropper-point.point-e { width: 8px !important; height: 28px !important; border-radius: 4px !important; }
-  .cropper-point.point-n { top: -4px !important; margin-left: -14px !important; }
-  .cropper-point.point-s { bottom: -4px !important; margin-left: -14px !important; }
-  .cropper-point.point-w { left: -4px !important; margin-top: -14px !important; }
-  .cropper-point.point-e { right: -4px !important; margin-top: -14px !important; }
-
-  .cropper-canvas,
-  .cropper-canvas img { cursor: default !important; }
+  .cropper-canvas, .cropper-canvas img { cursor: default !important; }
   .cropper-drag-box { cursor: default !important; }
   .cropper-crop-box { cursor: move !important; }
 
   .crop-hint {
-    text-align: center;
-    font-size: 12px;
-    color: var(--text-light);
-    margin-top: 10px;
-    padding: 8px;
-    background: #f8fafc;
-    border-radius: 8px;
+    text-align: center; font-size: 12px; color: var(--text-light);
+    margin-top: 10px; padding: 8px;
+    background: var(--bg-preview); border-radius: 8px;
   }
 
   @media (max-width: 640px) {
@@ -1021,115 +765,116 @@
     .header .icon-badge { width: 56px; height: 56px; font-size: 28px; }
     .header h1 { font-size: 19px; }
     .tabs { padding: 0 18px 20px; gap: 4px; }
-    .tab { padding: 10px 6px; font-size: 11px; }
+    .tab { padding: 10px 6px; font-size: 11px; min-width: 80px; }
     .tab .tab-icon { font-size: 18px; }
     .panel { padding: 20px 18px 24px; }
     .thumbs { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
     .thumb .img-wrap { height: 100px; }
-    .range-grid { grid-template-columns: 1fr; gap: 10px; }
-    .mode-selector { grid-template-columns: 1fr; }
-    .share-options { grid-template-columns: repeat(4, 1fr); }
+    .share-options { grid-template-columns: repeat(3, 1fr); }
     .result-actions { grid-template-columns: 1fr; }
-    .crop-toolbar button { padding: 6px 10px; font-size: 12px; }
     .modal-box { padding: 16px; border-radius: 16px; }
-    .modal-footer button { padding: 10px 18px; font-size: 13px; }
   }
 </style>
 </head>
 <body>
+<div class="top-bar">
+  <button class="top-btn" id="themeToggle" title="បិទ/បើកពន្លឺ">🌙</button>
+  <button class="top-btn" id="langToggle" title="ប្តូរភាសា">
+    <span class="lang-label" id="langLabel">EN</span>
+  </button>
+</div>
+
 <div class="container">
   <div class="header">
     <div class="icon-badge">📄</div>
-    <h1>ឧបករណ៍ PDF</h1>
-    <p>បម្លែង បញ្ចូល ឬ បំបែកឯកសារ PDF</p>
+    <h1 data-i18n="title">ឧបករណ៍ PDF</h1>
+    <p data-i18n="subtitle">បម្លែង បញ្ចូល បំបែក និងគ្រប់គ្រងឯកសារ PDF</p>
   </div>
 
-  <div class="tabs">
+  <div class="tabs" id="tabs">
     <button class="tab active" data-tab="convert">
       <span class="tab-icon">🖼️</span>
-      <span>រូបភាព → PDF</span>
+      <span data-i18n="tab_convert">រូបភាព → PDF</span>
     </button>
     <button class="tab" data-tab="merge">
       <span class="tab-icon">📎</span>
-      <span>Merge PDF</span>
+      <span data-i18n="tab_merge">Merge PDF</span>
     </button>
     <button class="tab" data-tab="split">
       <span class="tab-icon">✂️</span>
-      <span>Split PDF</span>
+      <span data-i18n="tab_split">Split PDF</span>
+    </button>
+    <button class="tab" data-tab="history">
+      <span class="tab-icon">📜</span>
+      <span data-i18n="tab_history">ប្រវត្តិ</span>
     </button>
   </div>
 
-  <!-- ===================== PANEL 1: Convert ===================== -->
+  <!-- Convert Panel -->
   <div class="panel active" id="panelConvert">
     <div class="form-group">
-      <label for="pdfName">ឈ្មោះឯកសារ PDF</label>
+      <label for="pdfName" data-i18n="label_pdf_name">ឈ្មោះឯកសារ PDF</label>
       <div class="input-wrap">
-        <input type="text" id="pdfName" placeholder="ឧទាហរណ៍៖ ឯកសាររបស់ខ្ញុំ" value="my-document" autocomplete="off">
+        <input type="text" id="pdfName" value="my-document" autocomplete="off">
       </div>
     </div>
 
     <div class="form-group">
-      <label>ជ្រើសរើសរូបភាព</label>
+      <label data-i18n="label_select_img">ជ្រើសរើសរូបភាព</label>
       <div class="file-drop" id="fileDrop" onclick="document.getElementById('fileInput').click()">
         <input type="file" id="fileInput" accept="image/*" multiple>
         <div class="drop-icon">📁</div>
-        <div class="drop-title">ចុចទីនេះ ឬអូសរូបភាពមកទម្លាក់</div>
-        <div class="drop-sub">គាំទ្រ JPG, PNG, WEBP, GIF</div>
+        <div class="drop-title" data-i18n="drop_title">ចុចទីនេះ ឬអូសរូបភាពមកទម្លាក់</div>
+        <div class="drop-sub" data-i18n="drop_sub">គាំទ្រ JPG, PNG, WEBP, GIF</div>
       </div>
     </div>
 
     <div class="thumbs-header" id="thumbsHeader">
-      <div class="count">រូបភាព<span id="imgCount">0</span></div>
-      <button class="clear-all" id="clearAllBtn">🗑️ លុបទាំងអស់</button>
+      <div class="count"><span data-i18n="label_images">រូបភាព</span><span id="imgCount">0</span></div>
+      <button class="clear-all" id="clearAllBtn" data-i18n="clear_all">🗑️ លុបទាំងអស់</button>
     </div>
 
     <div class="thumbs" id="thumbs"></div>
 
-    <div class="hint-bar" id="hint">💡 ចុចទាញរូបដើម្បីតម្រៀបលំដាប់</div>
+    <div class="hint-bar" id="hint" data-i18n="hint_drag">💡 ចុចទាញរូបដើម្បីតម្រៀបលំដាប់</div>
 
     <button class="btn-main" id="convertBtn" disabled>
       <span class="icon">✨</span>
-      <span>បម្លែងទៅ PDF</span>
+      <span data-i18n="btn_convert">បម្លែងទៅ PDF</span>
     </button>
 
-    <!-- Result Card -->
     <div class="result-card" id="convertResultCard">
       <div class="result-header">
         <div class="check-icon">✓</div>
         <div class="result-title">
-          <h3>បម្លែងជោគជ័យ!</h3>
-          <p>ឯកសារ PDF របស់អ្នករួចរាល់ហើយ</p>
+          <h3 data-i18n="result_success">បម្លែងជោគជ័យ!</h3>
+          <p data-i18n="result_ready">ឯកសារ PDF របស់អ្នករួចរាល់ហើយ</p>
           <span class="result-name" id="convertResultName">document.pdf</span>
         </div>
       </div>
       <div class="result-actions">
         <button class="result-btn download" data-result="convert" data-action="download">
           <span class="icon">⬇️</span>
-          <span>ទាញយក</span>
+          <span data-i18n="btn_download">ទាញយក</span>
         </button>
         <button class="result-btn share" data-result="convert" data-action="share">
           <span class="icon">📤</span>
-          <span>ចែករំលែក</span>
+          <span data-i18n="btn_share">ចែករំលែក</span>
         </button>
       </div>
       <div class="share-menu" id="convertShareMenu">
-        <div class="share-title">ជ្រើសរើសវិធីចែករំលែក</div>
+        <div class="share-title" data-i18n="share_title">ចែករំលែកជា File</div>
         <div class="share-options">
-          <button class="share-option" data-share="native" data-result="convert"><span class="share-icon">📱</span><span>ឧបករណ៍</span></button>
-          <button class="share-option" data-share="whatsapp" data-result="convert"><span class="share-icon">💬</span><span>WhatsApp</span></button>
-          <button class="share-option" data-share="telegram" data-result="convert"><span class="share-icon">✈️</span><span>Telegram</span></button>
-          <button class="share-option" data-share="email" data-result="convert"><span class="share-icon">✉️</span><span>Email</span></button>
-          <button class="share-option" data-share="facebook" data-result="convert"><span class="share-icon">📘</span><span>Facebook</span></button>
-          <button class="share-option" data-share="copy" data-result="convert"><span class="share-icon">📋</span><span>ចម្លងតំណ</span></button>
-          <button class="share-option" data-share="print" data-result="convert"><span class="share-icon">🖨️</span><span>បោះពុម្ព</span></button>
-          <button class="share-option" data-share="open" data-result="convert"><span class="share-icon">👁️</span><span>មើល</span></button>
+          <button class="share-option" data-share="native" data-result="convert"><span class="share-icon">📤</span><span data-i18n="sh_native">ចែករំលែក</span></button>
+          <button class="share-option" data-share="save" data-result="convert"><span class="share-icon">💾</span><span data-i18n="sh_save">រក្សាទុក</span></button>
+          <button class="share-option" data-share="open" data-result="convert"><span class="share-icon">👁️</span><span data-i18n="sh_open">មើល</span></button>
         </div>
       </div>
     </div>
 
     <button class="btn-reset" id="resetBtn">
       <span>🔄</span>
-      <span>ប្រើម្តងទៀត</span>
+      <span data-i18n="btn_reset">ប្រើម្តងទៀត</span>
     </button>
 
     <div class="progress-wrap" id="progressWrap">
@@ -1140,77 +885,71 @@
     <div class="status" id="status"></div>
   </div>
 
-  <!-- ===================== PANEL 2: Merge ===================== -->
+  <!-- Merge Panel -->
   <div class="panel" id="panelMerge">
     <div class="form-group">
-      <label for="mergedName">ឈ្មោះឯកសារ PDF ចុងក្រោយ</label>
+      <label for="mergedName" data-i18n="label_merged_name">ឈ្មោះឯកសារចុងក្រោយ</label>
       <div class="input-wrap">
-        <input type="text" id="mergedName" placeholder="ឧទាហរណ៍៖ merged-document" value="merged-document" autocomplete="off">
+        <input type="text" id="mergedName" value="merged-document" autocomplete="off">
       </div>
     </div>
 
     <div class="form-group">
-      <label>ជ្រើសរើសឯកសារ PDF</label>
+      <label data-i18n="label_select_pdfs">ជ្រើសរើសឯកសារ PDF</label>
       <div class="file-drop" id="pdfDrop" onclick="document.getElementById('pdfInput').click()">
         <input type="file" id="pdfInput" accept="application/pdf" multiple>
         <div class="drop-icon merge">📎</div>
-        <div class="drop-title">ចុចទីនេះ ឬអូសឯកសារ PDF មកទម្លាក់</div>
-        <div class="drop-sub">ជ្រើសបានច្រើនឯកសារ ដើម្បីបញ្ចូលគ្នា</div>
+        <div class="drop-title" data-i18n="drop_title_pdf">ចុចទីនេះ ឬអូសឯកសារ PDF មកទម្លាក់</div>
+        <div class="drop-sub" data-i18n="drop_sub_pdf">ជ្រើសបានច្រើនឯកសារ ដើម្បីបញ្ចូលគ្នា</div>
       </div>
     </div>
 
     <div class="thumbs-header" id="pdfHeader">
-      <div class="count">ឯកសារ PDF<span id="pdfCount">0</span></div>
-      <button class="clear-all" id="clearPdfsBtn">🗑️ លុបទាំងអស់</button>
+      <div class="count"><span data-i18n="label_pdfs">ឯកសារ PDF</span><span id="pdfCount">0</span></div>
+      <button class="clear-all" id="clearPdfsBtn" data-i18n="clear_all">🗑️ លុបទាំងអស់</button>
     </div>
 
     <div class="pdf-list" id="pdfList"></div>
 
-    <div class="hint-bar" id="mergeHint">💡 ចុចទាញឯកសារ ដើម្បីតម្រៀបលំដាប់ការបញ្ចូលគ្នា</div>
+    <div class="hint-bar" id="mergeHint" data-i18n="hint_merge">💡 ចុចទាញឯកសារ ដើម្បីតម្រៀបលំដាប់</div>
 
     <button class="btn-main merge" id="mergeBtn" disabled>
       <span class="icon">🔗</span>
-      <span>បញ្ចូល PDF ចូលគ្នា</span>
+      <span data-i18n="btn_merge">បញ្ចូល PDF ចូលគ្នា</span>
     </button>
 
-    <!-- Result Card -->
     <div class="result-card" id="mergeResultCard">
       <div class="result-header">
         <div class="check-icon">✓</div>
         <div class="result-title">
-          <h3>បញ្ចូលជោគជ័យ!</h3>
-          <p>ឯកសារ PDF ត្រូវបានបញ្ចូលគ្នាហើយ</p>
-          <span class="result-name" id="mergeResultName">merged-document.pdf</span>
+          <h3 data-i18n="merge_success">បញ្ចូលជោគជ័យ!</h3>
+          <p data-i18n="merge_ready">ឯកសារ PDF ត្រូវបានបញ្ចូលគ្នាហើយ</p>
+          <span class="result-name" id="mergeResultName">merged.pdf</span>
         </div>
       </div>
       <div class="result-actions">
         <button class="result-btn download" data-result="merge" data-action="download">
           <span class="icon">⬇️</span>
-          <span>ទាញយក</span>
+          <span data-i18n="btn_download">ទាញយក</span>
         </button>
         <button class="result-btn share" data-result="merge" data-action="share">
           <span class="icon">📤</span>
-          <span>ចែករំលែក</span>
+          <span data-i18n="btn_share">ចែករំលែក</span>
         </button>
       </div>
       <div class="share-menu" id="mergeShareMenu">
-        <div class="share-title">ជ្រើសរើសវិធីចែករំលែក</div>
+        <div class="share-title" data-i18n="share_title">ចែករំលែកជា File</div>
         <div class="share-options">
-          <button class="share-option" data-share="native" data-result="merge"><span class="share-icon">📱</span><span>ឧបករណ៍</span></button>
-          <button class="share-option" data-share="whatsapp" data-result="merge"><span class="share-icon">💬</span><span>WhatsApp</span></button>
-          <button class="share-option" data-share="telegram" data-result="merge"><span class="share-icon">✈️</span><span>Telegram</span></button>
-          <button class="share-option" data-share="email" data-result="merge"><span class="share-icon">✉️</span><span>Email</span></button>
-          <button class="share-option" data-share="facebook" data-result="merge"><span class="share-icon">📘</span><span>Facebook</span></button>
-          <button class="share-option" data-share="copy" data-result="merge"><span class="share-icon">📋</span><span>ចម្លងតំណ</span></button>
-          <button class="share-option" data-share="print" data-result="merge"><span class="share-icon">🖨️</span><span>បោះពុម្ព</span></button>
-          <button class="share-option" data-share="open" data-result="merge"><span class="share-icon">👁️</span><span>មើល</span></button>
+          <button class="share-option" data-share="native" data-result="merge"><span class="share-icon">📤</span><span data-i18n="sh_native">ចែករំលែក</span></button>
+          <button class="share-option" data-share="save" data-result="merge"><span class="share-icon">💾</span><span data-i18n="sh_save">រក្សាទុក</span></button>
+          <button class="share-option" data-share="open" data-result="merge"><span class="share-icon">👁️</span><span data-i18n="sh_open">មើល</span></button>
         </div>
       </div>
     </div>
 
     <button class="btn-reset" id="resetMergeBtn">
       <span>🔄</span>
-      <span>ប្រើម្តងទៀត</span>
+      <span data-i18n="btn_reset">ប្រើម្តងទៀត</span>
     </button>
 
     <div class="progress-wrap" id="mergeProgressWrap">
@@ -1221,134 +960,110 @@
     <div class="status" id="mergeStatus"></div>
   </div>
 
-  <!-- ===================== PANEL 3: Split ===================== -->
+  <!-- Split Panel -->
   <div class="panel" id="panelSplit">
     <div class="form-group">
-      <label>ជ្រើសរើសឯកសារ PDF តែមួយ</label>
-      <div class="file-drop" id="splitDrop" onclick="document.getElementById('splitInput').click()">
-        <input type="file" id="splitInput" accept="application/pdf">
-        <div class="drop-icon split">✂️</div>
-        <div class="drop-title">ចុចទីនេះ ឬអូសឯកសារ PDF មកទម្លាក់</div>
-        <div class="drop-sub">ជ្រើសបានតែ 1 ឯកសារ</div>
+      <label for="splitName" data-i18n="label_split_name">ឈ្មោះឯកសារចុងក្រោយ</label>
+      <div class="input-wrap">
+        <input type="text" id="splitName" value="split-document" autocomplete="off">
       </div>
     </div>
 
-    <div class="split-info" id="splitInfo" style="display:none;">
-      <div class="info-icon">📕</div>
-      <div class="info-body">
-        <div class="info-title" id="splitFileName">file.pdf</div>
-        <div class="info-sub" id="splitFileMeta">0 ទំព័រ</div>
+    <div class="form-group">
+      <label data-i18n="label_select_pdf_one">ជ្រើសរើសឯកសារ PDF តែមួយ</label>
+      <div class="file-drop" id="splitDrop" onclick="document.getElementById('splitInput').click()">
+        <input type="file" id="splitInput" accept="application/pdf">
+        <div class="drop-icon split">✂️</div>
+        <div class="drop-title" data-i18n="drop_title_pdf">ចុចទីនេះ ឬអូសឯកសារ PDF មកទម្លាក់</div>
+        <div class="drop-sub" data-i18n="drop_sub_one_pdf">ជ្រើសបានតែ 1 ឯកសារ</div>
       </div>
-      <div class="info-badge" id="splitTotalPages">0</div>
+    </div>
+
+    <div id="splitInfo" style="display:none; padding:16px; background:var(--bg-info); border:2px solid #a5f3fc; border-radius:var(--radius-sm); margin-bottom:22px; align-items:center; gap:14px;">
+      <div style="flex-shrink:0; width:46px;height:46px; background:linear-gradient(135deg,var(--split),var(--split-dark)); border-radius:12px; display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff;">📕</div>
+      <div style="flex:1;min-width:0;">
+        <div id="splitFileName" style="font-size:14px;font-weight:700;color:var(--split-dark);margin-bottom:3px;">file.pdf</div>
+        <div id="splitFileMeta" style="font-size:13px;color:var(--text-mid);">0 pages</div>
+      </div>
+      <div id="splitTotalPages" style="flex-shrink:0; padding:6px 12px; background:var(--split); color:#fff; border-radius:20px; font-size:12px; font-weight:700;">0</div>
     </div>
 
     <div id="splitOptions" style="display:none;">
       <div class="form-group">
-        <label>របៀបបំបែក</label>
-        <div class="mode-selector">
-          <button class="mode-btn active" data-mode="range">
-            <span class="mode-icon">📏</span>
-            <span>ជ្រើសជួរទំព័រ</span>
+        <label data-i18n="label_split_mode">របៀបបំបែក</label>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+          <button class="mode-btn active" data-mode="range" style="padding:14px;border:2px solid var(--border);border-radius:var(--radius-sm);background:var(--bg-card);font-family:inherit;font-size:13px;font-weight:600;color:var(--text-mid);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;">
+            <span style="font-size:22px;">📏</span>
+            <span data-i18n="mode_range">ជ្រើសជួរទំព័រ</span>
           </button>
-          <button class="mode-btn" data-mode="each">
-            <span class="mode-icon">📚</span>
-            <span>បំបែករាល់ទំព័រ</span>
+          <button class="mode-btn" data-mode="each" style="padding:14px;border:2px solid var(--border);border-radius:var(--radius-sm);background:var(--bg-card);font-family:inherit;font-size:13px;font-weight:600;color:var(--text-mid);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;">
+            <span style="font-size:22px;">📚</span>
+            <span data-i18n="mode_each">បំបែករាល់ទំព័រ</span>
           </button>
         </div>
       </div>
 
       <div id="rangeModeOptions">
-        <div class="form-group">
-          <label>ជម្រើសរហ័ស</label>
-          <div class="presets">
-            <button class="preset-btn" data-preset="all">ទាំងអស់</button>
-            <button class="preset-btn" data-preset="first-half">ពាក់កណ្តាលដំបូង</button>
-            <button class="preset-btn" data-preset="second-half">ពាក់កណ្តាលក្រោយ</button>
-            <button class="preset-btn" data-preset="odd">ទំព័រសេស</button>
-            <button class="preset-btn" data-preset="even">ទំព័រគូ</button>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:16px;">
+          <div>
+            <label style="display:block;font-size:13px;font-weight:600;color:var(--text-mid);margin-bottom:6px;" data-i18n="label_from">ចាប់ពីទំព័រ</label>
+            <input type="number" id="rangeFrom" min="1" value="1" style="text-align:center;padding:12px;font-weight:700;">
+          </div>
+          <div>
+            <label style="display:block;font-size:13px;font-weight:600;color:var(--text-mid);margin-bottom:6px;" data-i18n="label_to">ដល់ទំព័រ</label>
+            <input type="number" id="rangeTo" min="1" value="1" style="text-align:center;padding:12px;font-weight:700;">
           </div>
         </div>
-
-        <div class="range-grid">
-          <div class="range-field">
-            <label>ចាប់ពីទំព័រ</label>
-            <input type="number" id="rangeFrom" min="1" value="1">
-          </div>
-          <div class="range-field">
-            <label>ដល់ទំព័រ</label>
-            <input type="number" id="rangeTo" min="1" value="1">
-          </div>
-        </div>
-
-        <div class="skip-wrap">
-          <label>⏭️ រំលងទំព័រ</label>
-          <input type="text" id="skipPages" placeholder="ឧទាហរណ៍៖ 2, 4, 5-7" autocomplete="off">
-          <div class="hint-text">បំពេញលេខទំព័រដែលចង់រំលង ដោយប្រើសញ្ញាក្បៀស (,) និងសញ្ញាដក (-) សម្រាប់ជួរ</div>
-        </div>
-
-        <div class="preview-box">
-          <div class="preview-label">👁️ ទំព័រដែលនឹងចម្លង</div>
-          <div class="preview-pages" id="previewPages">
-            <span class="preview-empty">គ្មានទំព័រ</span>
-          </div>
-          <div class="preview-summary" id="previewSummary"></div>
+        <div style="margin-bottom:18px;padding:14px;background:var(--bg-skip);border-radius:var(--radius-sm);border:1px solid #fde68a;">
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:#92400e;margin-bottom:8px;" data-i18n="label_skip">⏭️ រំលងទំព័រ</label>
+          <input type="text" id="skipPages" placeholder="2, 4, 5-7" autocomplete="off" style="background:var(--bg-card);padding:10px 14px;font-size:14px;">
         </div>
       </div>
 
       <div id="eachModeOptions" style="display:none;">
-        <div class="skip-wrap" style="background:#ecfeff;border-color:#a5f3fc;">
-          <label style="color:#0e7490;">📚 របៀបបំបែករាល់ទំព័រ</label>
-          <div style="font-size:13px;color:#155e75;font-weight:500;padding:4px 0;">
-            ឯកសារនីមួយៗនឹងត្រូវបានបំបែកទៅជាឯកសារ PDF ដោយឡែកៗ
-            សម្រាប់រាល់ទំព័រ។ នឹងទាញយកជា ZIP file។
-          </div>
+        <div style="margin-bottom:18px;padding:14px;background:var(--bg-info);border-radius:var(--radius-sm);border:1px solid #a5f3fc;font-size:13px;color:var(--text-mid);font-weight:500;">
+          <span data-i18n="each_info">បំបែករាល់ទំព័រជា PDF ដោយឡែកៗ ទាញយកជា ZIP file។ ឈ្មោះឯកសារនីមួយៗនឹងមានលេខទំព័រ។</span>
         </div>
       </div>
     </div>
 
     <button class="btn-main split" id="splitBtn" disabled>
       <span class="icon">✂️</span>
-      <span>បំបែក PDF</span>
+      <span data-i18n="btn_split">បំបែក PDF</span>
     </button>
 
-    <!-- Result Card -->
     <div class="result-card" id="splitResultCard">
       <div class="result-header">
         <div class="check-icon">✓</div>
         <div class="result-title">
-          <h3>បំបែកជោគជ័យ!</h3>
-          <p>ឯកសារ PDF ត្រូវបានបំបែកហើយ</p>
+          <h3 data-i18n="split_success">បំបែកជោគជ័យ!</h3>
+          <p data-i18n="split_ready">ឯកសារ PDF ត្រូវបានបំបែកហើយ</p>
           <span class="result-name" id="splitResultName">split.pdf</span>
         </div>
       </div>
       <div class="result-actions">
         <button class="result-btn download" data-result="split" data-action="download">
           <span class="icon">⬇️</span>
-          <span>ទាញយក</span>
+          <span data-i18n="btn_download">ទាញយក</span>
         </button>
         <button class="result-btn share" data-result="split" data-action="share">
           <span class="icon">📤</span>
-          <span>ចែករំលែក</span>
+          <span data-i18n="btn_share">ចែករំលែក</span>
         </button>
       </div>
       <div class="share-menu" id="splitShareMenu">
-        <div class="share-title">ជ្រើសរើសវិធីចែករំលែក</div>
+        <div class="share-title" data-i18n="share_title">ចែករំលែកជា File</div>
         <div class="share-options">
-          <button class="share-option" data-share="native" data-result="split"><span class="share-icon">📱</span><span>ឧបករណ៍</span></button>
-          <button class="share-option" data-share="whatsapp" data-result="split"><span class="share-icon">💬</span><span>WhatsApp</span></button>
-          <button class="share-option" data-share="telegram" data-result="split"><span class="share-icon">✈️</span><span>Telegram</span></button>
-          <button class="share-option" data-share="email" data-result="split"><span class="share-icon">✉️</span><span>Email</span></button>
-          <button class="share-option" data-share="facebook" data-result="split"><span class="share-icon">📘</span><span>Facebook</span></button>
-          <button class="share-option" data-share="copy" data-result="split"><span class="share-icon">📋</span><span>ចម្លងតំណ</span></button>
-          <button class="share-option" data-share="print" data-result="split"><span class="share-icon">🖨️</span><span>បោះពុម្ព</span></button>
-          <button class="share-option" data-share="open" data-result="split"><span class="share-icon">👁️</span><span>មើល</span></button>
+          <button class="share-option" data-share="native" data-result="split"><span class="share-icon">📤</span><span data-i18n="sh_native">ចែករំលែក</span></button>
+          <button class="share-option" data-share="save" data-result="split"><span class="share-icon">💾</span><span data-i18n="sh_save">រក្សាទុក</span></button>
+          <button class="share-option" data-share="open" data-result="split"><span class="share-icon">👁️</span><span data-i18n="sh_open">មើល</span></button>
         </div>
       </div>
     </div>
 
     <button class="btn-reset split" id="resetSplitBtn">
       <span>🔄</span>
-      <span>ប្រើម្តងទៀត</span>
+      <span data-i18n="btn_reset">ប្រើម្តងទៀត</span>
     </button>
 
     <div class="progress-wrap" id="splitProgressWrap">
@@ -1358,29 +1073,52 @@
 
     <div class="status" id="splitStatus"></div>
   </div>
+
+  <!-- History Panel -->
+  <div class="panel" id="panelHistory">
+    <div id="historyContent"></div>
+    <button class="btn-clear-history" id="clearHistoryBtn" data-i18n="btn_clear_history">🗑️ លុបប្រវត្តិទាំងអស់</button>
+  </div>
 </div>
 
-<!-- ====== Crop Modal ====== -->
+<!-- Preview Modal -->
+<div class="preview-modal" id="previewModal">
+  <div class="preview-modal-box">
+    <div class="preview-modal-header">
+      <span class="preview-title" id="previewTitle">Document.pdf</span>
+      <div class="preview-actions">
+        <button class="pv-btn" id="previewDownloadBtn" title="ទាញយក">⬇️</button>
+        <button class="pv-btn close" id="previewCloseBtn" title="បិទ">✕</button>
+      </div>
+    </div>
+    <div class="preview-modal-body" id="previewBody">
+      <div class="preview-loading">
+        <div class="spinner"></div>
+        <div data-i18n="preview_loading">កំពុងផ្ទុក PDF...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Crop Modal -->
 <div class="modal" id="cropModal">
   <div class="modal-box">
     <div class="modal-header">
-      <h3>✂️ Crop រូបភាព</h3>
+      <h3>✂️ <span data-i18n="crop_title">Crop រូបភាព</span></h3>
       <span class="badge" id="cropInfo">0 × 0 px</span>
     </div>
     <div class="crop-toolbar">
-      <button data-tool="free" class="active">🆓 សេរី</button>
+      <button data-tool="free" class="active" data-i18n="crop_free">🆓 សេរី</button>
       <button data-tool="square">⬛ 1:1</button>
       <button data-tool="16-9">🖼️ 16:9</button>
       <button data-tool="4-3">📐 4:3</button>
-      <button data-tool="reset">🔄 កំណត់ឡើងវិញ</button>
+      <button data-tool="reset" data-i18n="crop_reset">🔄 កំណត់ឡើងវិញ</button>
     </div>
-    <div class="crop-area">
-      <img id="cropImage" src="">
-    </div>
-    <p class="crop-hint">💡 ទាញជ្រុង ⚪ ឬ គែម ដើម្បីកាត់ • ទាញកណ្តាល crop box ដើម្បីផ្លាស់ទី</p>
+    <div class="crop-area"><img id="cropImage" src=""></div>
+    <p class="crop-hint" data-i18n="crop_hint">💡 ទាញជ្រុង ⚪ ឬ គែម ដើម្បីកាត់</p>
     <div class="modal-footer">
-      <button class="btn-cancel" onclick="closeCrop()">បោះបង់</button>
-      <button class="btn-ok" onclick="applyCrop()">✓ យល់ព្រម</button>
+      <button class="btn-cancel" onclick="closeCrop()" data-i18n="btn_cancel">បោះបង់</button>
+      <button class="btn-ok" onclick="applyCrop()" data-i18n="btn_ok">✓ យល់ព្រម</button>
     </div>
   </div>
 </div>
@@ -1389,27 +1127,504 @@
 const { jsPDF } = window.jspdf;
 const { PDFDocument } = PDFLib;
 
-/* ===================== TAB SWITCHING ===================== */
-const tabs = document.querySelectorAll('.tab');
-const panels = {
-  convert: document.getElementById('panelConvert'),
-  merge: document.getElementById('panelMerge'),
-  split: document.getElementById('panelSplit')
+/* ============================================================
+   INDEXEDDB — ជំនួស localStorage សម្រាប់ history
+   ចំណុះធំជាង 100x — រក្សាទុក Blob ដោយផ្ទាល់
+   ============================================================ */
+const DB_NAME = 'pdfToolsDB';
+const DB_VERSION = 1;
+const STORE_NAME = 'history';
+const MAX_HISTORY = 50;
+let db = null;
+
+function openDB() {
+  return new Promise((resolve, reject) => {
+    if (db) return resolve(db);
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onerror = () => reject(req.error);
+    req.onsuccess = () => {
+      db = req.result;
+      resolve(db);
+    };
+    req.onupgradeneeded = (e) => {
+      const database = e.target.result;
+      if (!database.objectStoreNames.contains(STORE_NAME)) {
+        const store = database.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
+        store.createIndex('date', 'date', { unique: false });
+      }
+    };
+  });
+}
+
+async function dbAdd(entry) {
+  const database = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = database.transaction(STORE_NAME, 'readwrite');
+    const store = tx.objectStore(STORE_NAME);
+    const req = store.add(entry);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function dbGetAll() {
+  const database = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = database.transaction(STORE_NAME, 'readonly');
+    const store = tx.objectStore(STORE_NAME);
+    const req = store.getAll();
+    req.onsuccess = () => {
+      // តម្រៀបតាម date ចុះក្រោម
+      const arr = req.result.sort((a, b) => new Date(b.date) - new Date(a.date));
+      resolve(arr);
+    };
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function dbGet(id) {
+  const database = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = database.transaction(STORE_NAME, 'readonly');
+    const store = tx.objectStore(STORE_NAME);
+    const req = store.get(id);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function dbDelete(id) {
+  const database = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = database.transaction(STORE_NAME, 'readwrite');
+    const store = tx.objectStore(STORE_NAME);
+    const req = store.delete(id);
+    req.onsuccess = () => resolve();
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function dbClear() {
+  const database = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = database.transaction(STORE_NAME, 'readwrite');
+    const store = tx.objectStore(STORE_NAME);
+    const req = store.clear();
+    req.onsuccess = () => resolve();
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function dbCount() {
+  const database = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = database.transaction(STORE_NAME, 'readonly');
+    const store = tx.objectStore(STORE_NAME);
+    const req = store.count();
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+// លុបចាស់បំផុត ពេលលើស 50
+async function dbTrim() {
+  const all = await dbGetAll();
+  if (all.length <= MAX_HISTORY) return;
+  const toDelete = all.slice(MAX_HISTORY);
+  for (const item of toDelete) {
+    await dbDelete(item.id);
+  }
+}
+
+async function addToHistory(entry) {
+  try {
+    await dbAdd({
+      type: entry.type,
+      name: entry.name,
+      size: entry.blob.size,
+      pages: entry.pages || 0,
+      mime: entry.blob.type || 'application/pdf',
+      date: new Date().toISOString(),
+      blob: entry.blob           // ✅ រក្សាទុក Blob ដោយផ្ទាល់
+    });
+    await dbTrim();
+    await renderHistory();
+  } catch (err) {
+    console.error('History save failed:', err);
+    // បើ IndexedDB fail → try cleanup ចាស់ៗ
+    try {
+      const all = await dbGetAll();
+      for (const item of all.slice(20)) await dbDelete(item.id);
+    } catch (e2) {}
+  }
+}
+
+/* ==================== I18N ==================== */
+const i18n = {
+  km: {
+    title: 'ឧបករណ៍ PDF',
+    subtitle: 'បម្លែង បញ្ចូល បំបែក និងគ្រប់គ្រងឯកសារ PDF',
+    tab_convert: 'រូបភាព → PDF',
+    tab_merge: 'Merge PDF',
+    tab_split: 'Split PDF',
+    tab_history: 'ប្រវត្តិ',
+    label_pdf_name: 'ឈ្មោះឯកសារ PDF',
+    label_merged_name: 'ឈ្មោះឯកសារចុងក្រោយ',
+    label_split_name: 'ឈ្មោះឯកសារចុងក្រោយ',
+    label_select_img: 'ជ្រើសរើសរូបភាព',
+    label_select_pdfs: 'ជ្រើសរើសឯកសារ PDF',
+    label_select_pdf_one: 'ជ្រើសរើសឯកសារ PDF តែមួយ',
+    label_images: 'រូបភាព',
+    label_pdfs: 'ឯកសារ PDF',
+    drop_title: 'ចុចទីនេះ ឬអូសរូបភាពមកទម្លាក់',
+    drop_sub: 'គាំទ្រ JPG, PNG, WEBP, GIF',
+    drop_title_pdf: 'ចុចទីនេះ ឬអូសឯកសារ PDF មកទម្លាក់',
+    drop_sub_pdf: 'ជ្រើសបានច្រើនឯកសារ ដើម្បីបញ្ចូលគ្នា',
+    drop_sub_one_pdf: 'ជ្រើសបានតែ 1 ឯកសារ',
+    clear_all: '🗑️ លុបទាំងអស់',
+    hint_drag: '💡 ចុចទាញរូបដើម្បីតម្រៀបលំដាប់',
+    hint_merge: '💡 ចុចទាញឯកសារ ដើម្បីតម្រៀបលំដាប់',
+    btn_convert: 'បម្លែងទៅ PDF',
+    btn_merge: 'បញ្ចូល PDF ចូលគ្នា',
+    btn_split: 'បំបែក PDF',
+    btn_download: 'ទាញយក',
+    btn_share: 'ចែករំលែក',
+    btn_reset: 'ប្រើម្តងទៀត',
+    btn_cancel: 'បោះបង់',
+    btn_ok: '✓ យល់ព្រម',
+    btn_clear_history: '🗑️ លុបប្រវត្តិទាំងអស់',
+    result_success: 'បម្លែងជោគជ័យ!',
+    result_ready: 'ឯកសារ PDF របស់អ្នករួចរាល់ហើយ',
+    merge_success: 'បញ្ចូលជោគជ័យ!',
+    merge_ready: 'ឯកសារ PDF ត្រូវបានបញ្ចូលគ្នាហើយ',
+    split_success: 'បំបែកជោគជ័យ!',
+    split_ready: 'ឯកសារ PDF ត្រូវបានបំបែកហើយ',
+    share_title: 'ចែករំលែកជា File',
+    sh_native: 'ចែករំលែក',
+    sh_save: 'រក្សាទុក',
+    sh_open: 'មើល',
+    label_from: 'ចាប់ពីទំព័រ',
+    label_to: 'ដល់ទំព័រ',
+    label_skip: '⏭️ រំលងទំព័រ',
+    label_split_mode: 'របៀបបំបែក',
+    mode_range: 'ជ្រើសជួរទំព័រ',
+    mode_each: 'បំបែករាល់ទំព័រ',
+    each_info: 'បំបែករាល់ទំព័រជា PDF ដោយឡែកៗ ទាញយកជា ZIP file។ ឈ្មោះឯកសារនីមួយៗនឹងមានលេខទំព័រ។',
+    crop_title: 'Crop រូបភាព',
+    crop_free: '🆓 សេរី',
+    crop_reset: '🔄 កំណត់ឡើងវិញ',
+    crop_hint: '💡 ទាញជ្រុង ⚪ ឬ គែម ដើម្បីកាត់',
+    preview_loading: 'កំពុងផ្ទុក PDF...',
+    history_empty: 'មិនមានប្រវត្តិនៅឡើយទេ',
+    pages: 'ទំព័រ',
+    msg_shared: '✅ បានចែករំលែក',
+    msg_saved: '✅ បានរក្សាទុក',
+    msg_share_failed: 'មិនអាចចែករំលែកបានទេ',
+    confirm_clear: 'លុបប្រវត្តិទាំងអស់?'
+  },
+  en: {
+    title: 'PDF Tools',
+    subtitle: 'Convert, merge, split and manage PDF files',
+    tab_convert: 'Image → PDF',
+    tab_merge: 'Merge PDF',
+    tab_split: 'Split PDF',
+    tab_history: 'History',
+    label_pdf_name: 'PDF file name',
+    label_merged_name: 'Output file name',
+    label_split_name: 'Output file name',
+    label_select_img: 'Select images',
+    label_select_pdfs: 'Select PDF files',
+    label_select_pdf_one: 'Select one PDF file',
+    label_images: 'Images',
+    label_pdfs: 'PDF files',
+    drop_title: 'Click here or drag images here',
+    drop_sub: 'Supports JPG, PNG, WEBP, GIF',
+    drop_title_pdf: 'Click here or drag PDF files',
+    drop_sub_pdf: 'Select multiple files to merge',
+    drop_sub_one_pdf: 'Only 1 file allowed',
+    clear_all: '🗑️ Clear all',
+    hint_drag: '💡 Drag images to reorder',
+    hint_merge: '💡 Drag files to reorder',
+    btn_convert: 'Convert to PDF',
+    btn_merge: 'Merge PDFs',
+    btn_split: 'Split PDF',
+    btn_download: 'Download',
+    btn_share: 'Share',
+    btn_reset: 'Start over',
+    btn_cancel: 'Cancel',
+    btn_ok: '✓ OK',
+    btn_clear_history: '🗑️ Clear all history',
+    result_success: 'Converted!',
+    result_ready: 'Your PDF file is ready',
+    merge_success: 'Merged!',
+    merge_ready: 'PDFs have been merged',
+    split_success: 'Split!',
+    split_ready: 'PDF has been split',
+    share_title: 'Share as File',
+    sh_native: 'Share',
+    sh_save: 'Save',
+    sh_open: 'View',
+    label_from: 'From page',
+    label_to: 'To page',
+    label_skip: '⏭️ Skip pages',
+    label_split_mode: 'Split mode',
+    mode_range: 'Page range',
+    mode_each: 'Split each page',
+    each_info: 'Split each page as a separate PDF, download as ZIP. Each file will have a page number.',
+    crop_title: 'Crop image',
+    crop_free: '🆓 Free',
+    crop_reset: '🔄 Reset',
+    crop_hint: '💡 Drag corners ⚪ or edges to crop',
+    preview_loading: 'Loading PDF...',
+    history_empty: 'No history yet',
+    pages: 'pages',
+    msg_shared: '✅ Shared',
+    msg_saved: '✅ Saved',
+    msg_share_failed: 'Cannot share file',
+    confirm_clear: 'Clear all history?'
+  }
 };
 
-tabs.forEach(tab => {
-  tab.addEventListener('click', () => {
-    tabs.forEach(t => t.classList.remove('active'));
-    tab.classList.add('active');
-    Object.values(panels).forEach(p => p.classList.remove('active'));
-    panels[tab.dataset.tab].classList.add('active');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+let currentLang = localStorage.getItem('pdf_lang') || 'km';
+
+function applyLang() {
+  const dict = i18n[currentLang];
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (dict[key]) el.textContent = dict[key];
   });
+  document.getElementById('langLabel').textContent = currentLang === 'km' ? 'EN' : 'ខ្មែរ';
+  document.documentElement.lang = currentLang;
+  renderHistory();
+}
+
+document.getElementById('langToggle').addEventListener('click', () => {
+  currentLang = currentLang === 'km' ? 'en' : 'km';
+  localStorage.setItem('pdf_lang', currentLang);
+  applyLang();
 });
 
-/* =========================================================
-   RESULT STATE (ចែករំលែកសម្រាប់មុខងារទាំង 3)
-   ========================================================= */
+/* ==================== DARK MODE ==================== */
+const themeToggle = document.getElementById('themeToggle');
+let currentTheme = localStorage.getItem('pdf_theme') || 'light';
+
+function applyTheme() {
+  if (currentTheme === 'dark') {
+    document.body.classList.add('dark');
+    themeToggle.textContent = '☀️';
+  } else {
+    document.body.classList.remove('dark');
+    themeToggle.textContent = '🌙';
+  }
+}
+applyTheme();
+
+themeToggle.addEventListener('click', () => {
+  currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  localStorage.setItem('pdf_theme', currentTheme);
+  applyTheme();
+});
+
+/* ==================== HISTORY RENDER ==================== */
+function formatSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+}
+
+function timeAgo(iso) {
+  const diff = Date.now() - new Date(iso).getTime();
+  const m = Math.floor(diff / 60000);
+  if (m < 1) return currentLang === 'km' ? 'ឥឡូវ' : 'just now';
+  if (m < 60) return currentLang === 'km' ? `${m} នាទីមុន` : `${m} min ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return currentLang === 'km' ? `${h} ម៉ោងមុន` : `${h} hr ago`;
+  const d = Math.floor(h / 24);
+  if (d < 30) return currentLang === 'km' ? `${d} ថ្ងៃមុន` : `${d} day${d>1?'s':''} ago`;
+  return new Date(iso).toLocaleDateString();
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[c]));
+}
+
+async function renderHistory() {
+  const el = document.getElementById('historyContent');
+  if (!el) return;
+  const dict = i18n[currentLang];
+
+  let h = [];
+  try { h = await dbGetAll(); }
+  catch (err) {
+    console.error(err);
+    el.innerHTML = `<div class="empty-state"><div>❌ ${err.message}</div></div>`;
+    return;
+  }
+
+  if (h.length === 0) {
+    el.innerHTML = `
+      <div class="empty-state">
+        <span class="big-icon">📜</span>
+        <div>${dict.history_empty}</div>
+      </div>`;
+    return;
+  }
+
+  const iconMap = { convert: '🖼️', merge: '📎', split: '✂️' };
+  const frag = document.createDocumentFragment();
+  const list = document.createElement('div');
+  list.className = 'history-list';
+
+  h.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'history-item';
+    div.dataset.id = item.id;
+    div.innerHTML = `
+      <div class="hist-icon ${item.type}">${iconMap[item.type] || '📄'}</div>
+      <div class="hist-info">
+        <div class="hist-name">${escapeHtml(item.name)}</div>
+        <div class="hist-meta">
+          <span>${formatSize(item.size)}</span>
+          ${item.pages > 0 ? `<span>•</span><span>${item.pages} ${dict.pages}</span>` : ''}
+          <span>•</span>
+          <span>${timeAgo(item.date)}</span>
+        </div>
+      </div>
+      <div class="hist-actions">
+        <button class="hist-btn" data-action="download" data-id="${item.id}" title="${dict.btn_download}">⬇️</button>
+        <button class="hist-btn danger" data-action="del" data-id="${item.id}" title="Delete">🗑️</button>
+      </div>`;
+    list.appendChild(div);
+  });
+  frag.appendChild(list);
+  el.innerHTML = '';
+  el.appendChild(frag);
+
+  el.querySelectorAll('.history-item').forEach(item => {
+    item.addEventListener('click', (e) => {
+      if (e.target.closest('.hist-btn')) return;
+      openHistoryPreview(Number(item.dataset.id));
+    });
+  });
+  el.querySelectorAll('.hist-btn').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const id = Number(btn.dataset.id);
+      if (btn.dataset.action === 'del') {
+        await dbDelete(id);
+        renderHistory();
+      } else if (btn.dataset.action === 'download') {
+        await downloadHistory(id);
+      }
+    });
+  });
+}
+
+async function downloadHistory(id) {
+  const item = await dbGet(id);
+  if (!item) return;
+  const url = URL.createObjectURL(item.blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = item.name;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+document.getElementById('clearHistoryBtn').addEventListener('click', async () => {
+  if (confirm(i18n[currentLang].confirm_clear)) {
+    await dbClear();
+    renderHistory();
+  }
+});
+
+/* ==================== PREVIEW ==================== */
+const previewModal = document.getElementById('previewModal');
+const previewBody = document.getElementById('previewBody');
+const previewTitle = document.getElementById('previewTitle');
+let currentPreviewData = null;
+
+async function openPdfPreview(blob, name) {
+  previewModal.classList.add('active');
+  previewTitle.textContent = name;
+  previewBody.innerHTML = `
+    <div class="preview-loading">
+      <div class="spinner"></div>
+      <div>${i18n[currentLang].preview_loading}</div>
+    </div>`;
+  currentPreviewData = { blob, name };
+
+  try {
+    const arrayBuffer = await blob.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    const totalPages = pdf.numPages;
+    const maxPages = Math.min(totalPages, 5);
+    const wrap = document.createElement('div');
+    wrap.className = 'preview-canvas-wrap';
+
+    for (let p = 1; p <= maxPages; p++) {
+      const page = await pdf.getPage(p);
+      const viewport = page.getViewport({ scale: 1.5 });
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      await page.render({ canvasContext: ctx, viewport }).promise;
+      wrap.appendChild(canvas);
+    }
+    if (totalPages > maxPages) {
+      const info = document.createElement('div');
+      info.style.cssText = 'color:#cbd5e1;text-align:center;padding:12px;font-size:13px;';
+      info.textContent = `+${totalPages - maxPages} more pages`;
+      wrap.appendChild(info);
+    }
+    previewBody.innerHTML = '';
+    previewBody.appendChild(wrap);
+  } catch (err) {
+    console.error(err);
+    previewBody.innerHTML = `<div class="preview-loading">❌ ${err.message}</div>`;
+  }
+}
+
+document.getElementById('previewCloseBtn').addEventListener('click', () => {
+  previewModal.classList.remove('active');
+  previewBody.innerHTML = '';
+  currentPreviewData = null;
+});
+document.getElementById('previewDownloadBtn').addEventListener('click', () => {
+  if (currentPreviewData) {
+    const url = URL.createObjectURL(currentPreviewData.blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = currentPreviewData.name;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+});
+previewModal.addEventListener('click', (e) => {
+  if (e.target === previewModal) {
+    previewModal.classList.remove('active');
+    previewBody.innerHTML = '';
+  }
+});
+
+async function openHistoryPreview(id) {
+  const item = await dbGet(id);
+  if (!item) return;
+  if (item.mime === 'application/zip') {
+    await downloadHistory(id);
+    return;
+  }
+  openPdfPreview(item.blob, item.name);
+}
+
+/* ==================== RESULT STATE ==================== */
 const results = {
   convert: { blob: null, name: '', url: null },
   merge:   { blob: null, name: '', url: null },
@@ -1417,13 +1632,11 @@ const results = {
 };
 
 function setResult(type, blob, name) {
-  // Cleanup ចាស់
   if (results[type].url) URL.revokeObjectURL(results[type].url);
   results[type].blob = blob;
   results[type].name = name;
   results[type].url = URL.createObjectURL(blob);
 }
-
 function clearResult(type) {
   if (results[type].url) URL.revokeObjectURL(results[type].url);
   results[type].blob = null;
@@ -1433,29 +1646,52 @@ function clearResult(type) {
 
 function showResultCard(type, name) {
   const card = document.getElementById(`${type}ResultCard`);
-  const nameEl = document.getElementById(`${type}ResultName`);
-  nameEl.textContent = name;
+  document.getElementById(`${type}ResultName`).textContent = name;
   card.classList.add('show');
-  setTimeout(() => {
-    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }, 200);
+  setTimeout(() => card.scrollIntoView({ behavior: 'smooth', block: 'center' }), 200);
+  fireConfetti();
 }
-
 function hideResultCard(type) {
   document.getElementById(`${type}ResultCard`).classList.remove('show');
   document.getElementById(`${type}ShareMenu`).classList.remove('show');
 }
 
-/* ===== Download / Share Buttons (ទូទៅ) ===== */
+function fireConfetti() {
+  if (typeof confetti !== 'function') return;
+  confetti({
+    particleCount: 60,
+    spread: 60,
+    origin: { y: 0.6 },
+    colors: ['#6366f1', '#ec4899', '#10b981', '#f59e0b']
+  });
+}
+
+/* ==================== TABS ==================== */
+const tabs = document.querySelectorAll('.tab');
+const panels = {
+  convert: document.getElementById('panelConvert'),
+  merge: document.getElementById('panelMerge'),
+  split: document.getElementById('panelSplit'),
+  history: document.getElementById('panelHistory')
+};
+tabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    tabs.forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    Object.values(panels).forEach(p => p.classList.remove('active'));
+    panels[tab.dataset.tab].classList.add('active');
+    if (tab.dataset.tab === 'history') renderHistory();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+});
+
+/* ==================== DOWNLOAD / SHARE ==================== */
 document.querySelectorAll('.result-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     const type = btn.dataset.result;
-    const action = btn.dataset.action;
-    if (action === 'download') {
-      downloadResult(type);
-    } else if (action === 'share') {
-      const menu = document.getElementById(`${type}ShareMenu`);
-      menu.classList.toggle('show');
+    if (btn.dataset.action === 'download') downloadResult(type);
+    else if (btn.dataset.action === 'share') {
+      document.getElementById(`${type}ShareMenu`).classList.toggle('show');
     }
   });
 });
@@ -1473,85 +1709,57 @@ function downloadResult(type) {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-/* ===== Share Options (ទូទៅ) ===== */
 document.querySelectorAll('.share-option').forEach(btn => {
   btn.addEventListener('click', async () => {
-    const type = btn.dataset.result;
-    const shareType = btn.dataset.share;
-    await handleShare(type, shareType);
+    await handleShare(btn.dataset.result, btn.dataset.share);
   });
 });
 
 async function handleShare(type, shareType) {
   const r = results[type];
   if (!r.blob) return;
+
+  const dict = i18n[currentLang];
   const file = new File([r.blob], r.name, { type: r.blob.type || 'application/pdf' });
 
   if (shareType === 'native') {
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
       try {
-        await navigator.share({ files: [file], title: r.name, text: 'ឯកសារ PDF របស់ខ្ញុំ' });
+        await navigator.share({ files: [file], title: r.name, text: r.name });
+        showTempMessage(type, dict.msg_shared);
       } catch (err) {
-        if (err.name !== 'AbortError') alert('មិនអាចចែករំលែកបានទេ');
+        if (err.name !== 'AbortError') showTempMessage(type, dict.msg_share_failed);
       }
     } else if (navigator.share) {
       try {
-        await navigator.share({ title: r.name, text: 'ឯកសារ PDF របស់ខ្ញុំ', url: r.url });
+        await navigator.share({ files: [file] });
+        showTempMessage(type, dict.msg_shared);
       } catch (err) {
-        if (err.name !== 'AbortError') alert('មិនអាចចែករំលែកបានទេ');
+        if (err.name !== 'AbortError') {
+          downloadResult(type);
+          showTempMessage(type, dict.msg_saved);
+        }
       }
     } else {
-      alert('ឧបករណ៍របស់អ្នកមិនគាំទ្រ Native Share ទេ');
+      downloadResult(type);
+      showTempMessage(type, dict.msg_saved);
     }
+    document.getElementById(`${type}ShareMenu`).classList.remove('show');
     return;
   }
 
-  if (shareType === 'copy') {
-    try {
-      if (navigator.clipboard && window.isSecureContext) {
-        await navigator.clipboard.writeText(r.url);
-      } else {
-        const ta = document.createElement('textarea');
-        ta.value = r.url;
-        ta.style.position = 'fixed';
-        ta.style.opacity = '0';
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand('copy');
-        document.body.removeChild(ta);
-      }
-      showTempMessage(type, '✅ បានចម្លងតំណភ្ជាប់');
-    } catch (err) {
-      alert('មិនអាចចម្លងបានទេ');
-    }
-    return;
-  }
-
-  if (shareType === 'print') {
-    const w = window.open(r.url, '_blank');
-    if (w) w.addEventListener('load', () => { try { w.print(); } catch(e) {} });
+  if (shareType === 'save') {
+    downloadResult(type);
+    showTempMessage(type, dict.msg_saved);
+    document.getElementById(`${type}ShareMenu`).classList.remove('show');
     return;
   }
 
   if (shareType === 'open') {
     window.open(r.url, '_blank');
+    document.getElementById(`${type}ShareMenu`).classList.remove('show');
     return;
   }
-
-  const shareText = encodeURIComponent('ឯកសារ PDF របស់ខ្ញុំ');
-  const shareUrl = encodeURIComponent(r.url);
-
-  if (shareType === 'whatsapp') {
-    window.open(`https://wa.me/?text=${shareText}%20${shareUrl}`, '_blank');
-  } else if (shareType === 'telegram') {
-    window.open(`https://t.me/share/url?url=${shareUrl}&text=${shareText}`, '_blank');
-  } else if (shareType === 'email') {
-    window.open(`mailto:?subject=${encodeURIComponent(r.name)}&body=${shareText}%20${shareUrl}`, '_blank');
-  } else if (shareType === 'facebook') {
-    window.open(`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`, '_blank');
-  }
-
-  document.getElementById(`${type}ShareMenu`).classList.remove('show');
 }
 
 function showTempMessage(type, msg) {
@@ -1559,15 +1767,42 @@ function showTempMessage(type, msg) {
   const prev = el.textContent;
   el.textContent = msg;
   el.classList.add('success');
-  setTimeout(() => {
-    el.textContent = prev;
-    el.classList.remove('success');
-  }, 2000);
+  setTimeout(() => { el.textContent = prev; el.classList.remove('success'); }, 2000);
 }
 
-/* =========================================================
-   PART 1: CONVERT IMAGES → PDF
-   ========================================================= */
+/* ==================== FILE DROP ==================== */
+function attachFileDrop(dropEl, onFiles) {
+  let dragCount = 0;
+  dropEl.addEventListener('dragenter', (e) => {
+    e.preventDefault(); e.stopPropagation();
+    dragCount++;
+    if (dragCount === 1) dropEl.classList.add('dragover');
+  });
+  dropEl.addEventListener('dragover', (e) => {
+    e.preventDefault(); e.stopPropagation();
+    e.dataTransfer.dropEffect = 'copy';
+  });
+  dropEl.addEventListener('dragleave', (e) => {
+    e.preventDefault(); e.stopPropagation();
+    dragCount--;
+    if (dragCount <= 0) { dragCount = 0; dropEl.classList.remove('dragover'); }
+  });
+  dropEl.addEventListener('drop', (e) => {
+    e.preventDefault(); e.stopPropagation();
+    dragCount = 0;
+    dropEl.classList.remove('dragover');
+    const files = Array.from(e.dataTransfer.files || []);
+    if (files.length) onFiles(files);
+  });
+  ['dragenter','dragover','drop'].forEach(evt => {
+    document.addEventListener(evt, (e) => {
+      if (!e.target.closest('.file-drop')) return;
+      e.preventDefault();
+    });
+  });
+}
+
+/* ==================== PART 1: CONVERT ==================== */
 const fileInput = document.getElementById('fileInput');
 const fileDrop = document.getElementById('fileDrop');
 const thumbsEl = document.getElementById('thumbs');
@@ -1589,13 +1824,7 @@ let uid = 0;
 let dragSrcId = null;
 
 fileInput.addEventListener('change', (e) => addFiles(Array.from(e.target.files)));
-fileDrop.addEventListener('dragover', (e) => { e.preventDefault(); fileDrop.classList.add('dragover'); });
-fileDrop.addEventListener('dragleave', () => fileDrop.classList.remove('dragover'));
-fileDrop.addEventListener('drop', (e) => {
-  e.preventDefault();
-  fileDrop.classList.remove('dragover');
-  addFiles(Array.from(e.dataTransfer.files));
-});
+attachFileDrop(fileDrop, (files) => addFiles(files));
 
 clearAllBtn.addEventListener('click', () => {
   if (images.length === 0) return;
@@ -1604,13 +1833,19 @@ clearAllBtn.addEventListener('click', () => {
 
 async function addFiles(files) {
   const imgs = files.filter(f => f.type.startsWith('image/'));
+  if (imgs.length === 0) return;
+  if (imgs.length > 20) statusEl.textContent = `⏳ កំពុងអាន ${imgs.length} រូបភាព...`;
+
+  const newItems = [];
   for (const file of imgs) {
     const src = await readAsDataURL(file);
     const dim = await getImageSize(src);
-    images.push({ id: uid++, file, src, rotation: 0, crop: null, naturalW: dim.w, naturalH: dim.h });
+    newItems.push({ id: uid++, file, src, rotation: 0, crop: null, naturalW: dim.w, naturalH: dim.h });
   }
+  images = images.concat(newItems);
   renderThumbs();
   fileInput.value = '';
+  statusEl.textContent = '';
 }
 
 function readAsDataURL(file) {
@@ -1620,7 +1855,6 @@ function readAsDataURL(file) {
     r.readAsDataURL(file);
   });
 }
-
 function getImageSize(src) {
   return new Promise(res => {
     const img = new Image();
@@ -1630,7 +1864,7 @@ function getImageSize(src) {
 }
 
 function renderThumbs() {
-  thumbsEl.innerHTML = '';
+  const frag = document.createDocumentFragment();
   images.forEach((item, idx) => {
     const div = document.createElement('div');
     div.className = 'thumb';
@@ -1639,21 +1873,15 @@ function renderThumbs() {
     div.innerHTML = `
       <span class="num">${idx + 1}</span>
       <span class="drag-hint">✥</span>
-      <div class="img-wrap">
-        <img src="${item.src}" style="transform: rotate(${item.rotation}deg);">
-      </div>
+      <div class="img-wrap"><img src="${item.src}" style="transform: rotate(${item.rotation}deg);" loading="lazy"></div>
       <div class="actions">
-        <button title="បង្វិលឆ្វេង" data-act="rotl">↺</button>
-        <button title="បង្វិលស្តាំ" data-act="rotr">↻</button>
-        <button title="Crop" data-act="crop">✂️</button>
-        <button title="លុប" data-act="del">🗑️</button>
-      </div>
-    `;
+        <button data-act="rotl">↺</button>
+        <button data-act="rotr">↻</button>
+        <button data-act="crop">✂️</button>
+        <button data-act="del">🗑️</button>
+      </div>`;
     div.querySelectorAll('button[data-act]').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        handleAction(item.id, btn.dataset.act);
-      });
+      btn.addEventListener('click', (e) => { e.stopPropagation(); handleAction(item.id, btn.dataset.act); });
     });
     div.addEventListener('dragstart', onDragStart);
     div.addEventListener('dragend', onDragEnd);
@@ -1661,8 +1889,10 @@ function renderThumbs() {
     div.addEventListener('dragleave', onDragLeave);
     div.addEventListener('drop', onDrop);
     addTouchDrag(div, item.id, pdfNameInput, 'images');
-    thumbsEl.appendChild(div);
+    frag.appendChild(div);
   });
+  thumbsEl.innerHTML = '';
+  thumbsEl.appendChild(frag);
   convertBtn.disabled = images.length === 0;
   thumbsHeader.classList.toggle('show', images.length > 0);
   if (images.length > 0) imgCount.textContent = images.length;
@@ -1703,7 +1933,6 @@ function addTouchDrag(el, id, inputToBlur, collection) {
   let touchDragEl = null;
   let holdTimer = null;
   let startX, startY;
-
   el.addEventListener('touchstart', (e) => {
     startX = e.touches[0].clientX;
     startY = e.touches[0].clientY;
@@ -1716,9 +1945,8 @@ function addTouchDrag(el, id, inputToBlur, collection) {
         inputToBlur.setAttribute('readonly', 'readonly');
         inputToBlur.setAttribute('inputmode', 'none');
       }
-    }, 300);
+    }, 250);
   }, { passive: true });
-
   el.addEventListener('touchmove', (e) => {
     if (!touchDragEl) {
       const dx = Math.abs(e.touches[0].clientX - startX);
@@ -1733,7 +1961,6 @@ function addTouchDrag(el, id, inputToBlur, collection) {
     document.querySelectorAll('.drag-over').forEach(x => x.classList.remove('drag-over'));
     if (item && Number(item.dataset.id) !== id) item.classList.add('drag-over');
   }, { passive: false });
-
   const finish = () => {
     clearTimeout(holdTimer);
     if (inputToBlur) {
@@ -1752,12 +1979,9 @@ function addTouchDrag(el, id, inputToBlur, collection) {
         arr.splice(tgtIdx, 0, moved);
       }
     }
-    document.querySelectorAll('.dragging, .drag-over').forEach(x => {
-      x.classList.remove('dragging', 'drag-over');
-    });
+    document.querySelectorAll('.dragging, .drag-over').forEach(x => x.classList.remove('dragging', 'drag-over'));
     touchDragEl = null;
-    if (collection === 'pdfs') renderPdfs();
-    else renderThumbs();
+    if (collection === 'pdfs') renderPdfs(); else renderThumbs();
   };
   el.addEventListener('touchend', finish);
   el.addEventListener('touchcancel', finish);
@@ -1776,7 +2000,6 @@ function handleAction(id, act) {
 
 let cropper = null;
 let cropTarget = null;
-
 function openCrop(item) {
   cropTarget = item;
   const modal = document.getElementById('cropModal');
@@ -1786,7 +2009,6 @@ function openCrop(item) {
   if (cropper) { cropper.destroy(); cropper = null; }
   document.querySelectorAll('.crop-toolbar button[data-tool]').forEach(b => b.classList.remove('active'));
   document.querySelector('.crop-toolbar button[data-tool="free"]').classList.add('active');
-
   setTimeout(() => {
     cropper = new Cropper(img, {
       viewMode: 1, dragMode: 'none', autoCropArea: 0.8, responsive: true, restore: false,
@@ -1822,7 +2044,6 @@ function applyCrop() {
   closeCrop();
   renderThumbs();
 }
-
 document.querySelectorAll('.crop-toolbar button[data-tool]').forEach(btn => {
   btn.addEventListener('click', () => {
     if (!cropper) return;
@@ -1851,7 +2072,6 @@ convertBtn.addEventListener('click', async () => {
   statusEl.classList.remove('success', 'error');
   hideResultCard('convert');
   clearResult('convert');
-
   progressWrap.classList.add('active');
   updateProgress(0);
 
@@ -1874,7 +2094,7 @@ convertBtn.addEventListener('click', async () => {
       const y = (pageH - h) / 2;
       pdf.addImage(dataUrl, 'JPEG', x, y, w, h);
       updateProgress(Math.round(((i + 1) / images.length) * 100));
-      await new Promise(r => setTimeout(r, 20));
+      if (i % 5 === 0) await new Promise(r => setTimeout(r, 0));
     }
 
     const blob = pdf.output('blob');
@@ -1882,9 +2102,10 @@ convertBtn.addEventListener('click', async () => {
     setResult('convert', blob, fileName);
     showResultCard('convert', fileName);
     resetBtn.classList.add('show');
+    await addToHistory({ type: 'convert', name: fileName, pages: images.length, blob });
   } catch (err) {
     console.error(err);
-    statusEl.textContent = '❌ មានបញ្ហា៖ ' + err.message;
+    statusEl.textContent = '❌ ' + err.message;
     statusEl.classList.add('error');
   } finally {
     convertBtn.disabled = false;
@@ -1915,7 +2136,6 @@ function updateProgress(p) {
   progressFill.style.width = p + '%';
   progressText.textContent = p + '%';
 }
-
 function loadImg(src) {
   return new Promise((res, rej) => {
     const img = new Image();
@@ -1924,7 +2144,6 @@ function loadImg(src) {
     img.src = src;
   });
 }
-
 async function processImage(item) {
   const base = await loadImg(item.src);
   let sx = 0, sy = 0, sw = base.naturalWidth, sh = base.naturalHeight;
@@ -1941,12 +2160,10 @@ async function processImage(item) {
   ctx.translate(cw / 2, ch / 2);
   ctx.rotate(rad);
   ctx.drawImage(base, sx, sy, sw, sh, -sw / 2, -sh / 2, sw, sh);
-  return canvas.toDataURL('image/jpeg', 0.92);
+  return canvas.toDataURL('image/jpeg', 0.9);
 }
 
-/* =========================================================
-   PART 2: MERGE PDF
-   ========================================================= */
+/* ==================== PART 2: MERGE ==================== */
 const pdfInput = document.getElementById('pdfInput');
 const pdfDrop = document.getElementById('pdfDrop');
 const pdfList = document.getElementById('pdfList');
@@ -1967,13 +2184,7 @@ let pdfUid = 0;
 let pdfDragSrcId = null;
 
 pdfInput.addEventListener('change', (e) => addPdfs(Array.from(e.target.files)));
-pdfDrop.addEventListener('dragover', (e) => { e.preventDefault(); pdfDrop.classList.add('dragover'); });
-pdfDrop.addEventListener('dragleave', () => pdfDrop.classList.remove('dragover'));
-pdfDrop.addEventListener('drop', (e) => {
-  e.preventDefault();
-  pdfDrop.classList.remove('dragover');
-  addPdfs(Array.from(e.dataTransfer.files));
-});
+attachFileDrop(pdfDrop, (files) => addPdfs(files));
 
 clearPdfsBtn.addEventListener('click', () => {
   if (pdfs.length === 0) return;
@@ -1982,31 +2193,25 @@ clearPdfsBtn.addEventListener('click', () => {
 
 async function addPdfs(files) {
   const pdfFiles = files.filter(f => f.type === 'application/pdf' || f.name.toLowerCase().endsWith('.pdf'));
+  if (pdfFiles.length === 0) return;
+  if (pdfFiles.length > 10) mergeStatus.textContent = `⏳ កំពុងអាន ${pdfFiles.length} ឯកសារ...`;
+
   for (const file of pdfFiles) {
     let pageCount = null;
     try {
       const buf = await file.arrayBuffer();
       const doc = await PDFDocument.load(buf, { ignoreEncryption: true });
       pageCount = doc.getPageCount();
-    } catch (err) { console.warn('Cannot read page count:', file.name, err); }
+    } catch (err) {}
     pdfs.push({ id: pdfUid++, file, name: file.name, size: file.size, pageCount });
   }
   renderPdfs();
   pdfInput.value = '';
-}
-
-function formatSize(bytes) {
-  if (bytes < 1024) return bytes + ' B';
-  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-  return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
-}
-
-function escapeHtml(s) {
-  return s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  mergeStatus.textContent = '';
 }
 
 function renderPdfs() {
-  pdfList.innerHTML = '';
+  const frag = document.createDocumentFragment();
   pdfs.forEach((item, idx) => {
     const div = document.createElement('div');
     div.className = 'pdf-item';
@@ -2019,12 +2224,11 @@ function renderPdfs() {
         <div class="pdf-name">${escapeHtml(item.name)}</div>
         <div class="pdf-meta">
           <span>${formatSize(item.size)}</span>
-          ${item.pageCount !== null ? `<span>•</span><span>${item.pageCount} ទំព័រ</span>` : ''}
+          ${item.pageCount !== null ? `<span>•</span><span>${item.pageCount} ${i18n[currentLang].pages}</span>` : ''}
         </div>
       </div>
       <span class="drag-handle">✥</span>
-      <button class="remove-btn" title="លុប" data-remove="${item.id}">🗑️</button>
-    `;
+      <button class="remove-btn" data-remove="${item.id}">🗑️</button>`;
     div.querySelector('[data-remove]').addEventListener('click', (e) => {
       e.stopPropagation();
       pdfs = pdfs.filter(p => p.id !== item.id);
@@ -2036,8 +2240,10 @@ function renderPdfs() {
     div.addEventListener('dragleave', onPdfDragLeave);
     div.addEventListener('drop', onPdfDrop);
     addTouchDrag(div, item.id, mergedNameInput, 'pdfs');
-    pdfList.appendChild(div);
+    frag.appendChild(div);
   });
+  pdfList.innerHTML = '';
+  pdfList.appendChild(frag);
   mergeBtn.disabled = pdfs.length < 2;
   pdfHeader.classList.toggle('show', pdfs.length > 0);
   if (pdfs.length > 0) pdfCount.textContent = pdfs.length;
@@ -2084,6 +2290,7 @@ mergeBtn.addEventListener('click', async () => {
   clearResult('merge');
   mergeProgressWrap.classList.add('active', 'merge-active');
   updateMergeProgress(0);
+  let totalPages = 0;
 
   try {
     const mergedPdf = await PDFDocument.create();
@@ -2092,10 +2299,11 @@ mergeBtn.addEventListener('click', async () => {
       const item = pdfs[i];
       const buf = await item.file.arrayBuffer();
       const srcDoc = await PDFDocument.load(buf, { ignoreEncryption: true });
+      totalPages += srcDoc.getPageCount();
       const copiedPages = await mergedPdf.copyPages(srcDoc, srcDoc.getPageIndices());
       copiedPages.forEach(p => mergedPdf.addPage(p));
       updateMergeProgress(Math.round(((i + 1) / total) * 90));
-      await new Promise(r => setTimeout(r, 30));
+      await new Promise(r => setTimeout(r, 20));
     }
     updateMergeProgress(95);
     const bytes = await mergedPdf.save();
@@ -2105,9 +2313,9 @@ mergeBtn.addEventListener('click', async () => {
     setResult('merge', blob, fileName);
     showResultCard('merge', fileName);
     resetMergeBtn.classList.add('show');
+    await addToHistory({ type: 'merge', name: fileName, pages: totalPages, blob });
   } catch (err) {
-    console.error(err);
-    mergeStatus.textContent = '❌ មានបញ្ហា៖ ' + (err.message || 'មិនអាចបញ្ចូលបាន');
+    mergeStatus.textContent = '❌ ' + (err.message || 'Error');
     mergeStatus.classList.add('error');
   } finally {
     mergeBtn.disabled = false;
@@ -2133,15 +2341,12 @@ resetMergeBtn.addEventListener('click', () => {
   renderPdfs();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 });
-
 function updateMergeProgress(p) {
   mergeProgressFill.style.width = p + '%';
   mergeProgressText.textContent = p + '%';
 }
 
-/* =========================================================
-   PART 3: SPLIT PDF
-   ========================================================= */
+/* ==================== PART 3: SPLIT ==================== */
 const splitInput = document.getElementById('splitInput');
 const splitDrop = document.getElementById('splitDrop');
 const splitInfo = document.getElementById('splitInfo');
@@ -2155,14 +2360,12 @@ const splitStatus = document.getElementById('splitStatus');
 const splitProgressWrap = document.getElementById('splitProgressWrap');
 const splitProgressFill = document.getElementById('splitProgressFill');
 const splitProgressText = document.getElementById('splitProgressText');
-
 const rangeFrom = document.getElementById('rangeFrom');
 const rangeTo = document.getElementById('rangeTo');
 const skipPages = document.getElementById('skipPages');
-const previewPages = document.getElementById('previewPages');
-const previewSummary = document.getElementById('previewSummary');
 const rangeModeOptions = document.getElementById('rangeModeOptions');
 const eachModeOptions = document.getElementById('eachModeOptions');
+const splitNameInput = document.getElementById('splitName');
 
 let splitFile = null;
 let splitDoc = null;
@@ -2173,49 +2376,39 @@ splitInput.addEventListener('change', (e) => {
   const file = e.target.files[0];
   if (file) loadSplitFile(file);
 });
-
-splitDrop.addEventListener('dragover', (e) => { e.preventDefault(); splitDrop.classList.add('dragover'); });
-splitDrop.addEventListener('dragleave', () => splitDrop.classList.remove('dragover'));
-splitDrop.addEventListener('drop', (e) => {
-  e.preventDefault();
-  splitDrop.classList.remove('dragover');
-  const file = Array.from(e.dataTransfer.files).find(f => f.type === 'application/pdf' || f.name.toLowerCase().endsWith('.pdf'));
+attachFileDrop(splitDrop, (files) => {
+  const file = files.find(f => f.type === 'application/pdf' || f.name.toLowerCase().endsWith('.pdf'));
   if (file) loadSplitFile(file);
 });
 
 async function loadSplitFile(file) {
-  splitStatus.textContent = '⏳ កំពុងអានឯកសារ...';
+  splitStatus.textContent = '⏳...';
   splitStatus.classList.remove('success', 'error');
   try {
     const buf = await file.arrayBuffer();
     const doc = await PDFDocument.load(buf, { ignoreEncryption: true });
-    splitFile = file;
-    splitDoc = doc;
-    splitPageCount = doc.getPageCount();
-
+    splitFile = file; splitDoc = doc; splitPageCount = doc.getPageCount();
     splitFileName.textContent = file.name;
-    splitFileMeta.textContent = `${formatSize(file.size)} • ${splitPageCount} ទំព័រ`;
+    splitFileMeta.textContent = `${formatSize(file.size)} • ${splitPageCount} ${i18n[currentLang].pages}`;
     splitTotalPages.textContent = splitPageCount;
     splitInfo.style.display = 'flex';
     splitOptions.style.display = 'block';
-
     rangeFrom.max = splitPageCount;
     rangeTo.max = splitPageCount;
     rangeFrom.value = 1;
     rangeTo.value = splitPageCount;
 
-    updatePreview();
+    if (!splitNameInput.value || splitNameInput.value === 'split-document') {
+      splitNameInput.value = file.name.replace(/\.pdf$/i, '') + '-split';
+    }
+
     splitBtn.disabled = false;
     splitStatus.textContent = '';
   } catch (err) {
-    console.error(err);
-    splitStatus.textContent = '❌ មិនអាចអានឯកសារ PDF បានទេ';
+    splitStatus.textContent = '❌ PDF error';
     splitStatus.classList.add('error');
-    splitFile = null;
-    splitDoc = null;
-    splitPageCount = 0;
-    splitInfo.style.display = 'none';
-    splitOptions.style.display = 'none';
+    splitFile = null; splitDoc = null; splitPageCount = 0;
+    splitInfo.style.display = 'none'; splitOptions.style.display = 'none';
     splitBtn.disabled = true;
   }
   splitInput.value = '';
@@ -2223,8 +2416,14 @@ async function loadSplitFile(file) {
 
 document.querySelectorAll('.mode-btn').forEach(btn => {
   btn.addEventListener('click', () => {
-    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.mode-btn').forEach(b => {
+      b.classList.remove('active');
+      b.style.background = 'var(--bg-card)';
+      b.style.color = 'var(--text-mid)';
+    });
     btn.classList.add('active');
+    btn.style.background = 'linear-gradient(135deg,#ecfeff,#cffafe)';
+    btn.style.color = 'var(--split-dark)';
     splitMode = btn.dataset.mode;
     if (splitMode === 'range') {
       rangeModeOptions.style.display = 'block';
@@ -2244,11 +2443,8 @@ function parseSkipList(str, total) {
     if (part.includes('-')) {
       const [a, b] = part.split('-').map(s => parseInt(s.trim(), 10));
       if (!isNaN(a) && !isNaN(b)) {
-        const start = Math.min(a, b);
-        const end = Math.max(a, b);
-        for (let i = start; i <= end; i++) {
-          if (i >= 1 && i <= total) set.add(i);
-        }
+        const s1 = Math.min(a, b), e1 = Math.max(a, b);
+        for (let i = s1; i <= e1; i++) if (i >= 1 && i <= total) set.add(i);
       }
     } else {
       const n = parseInt(part, 10);
@@ -2266,82 +2462,22 @@ function getSplitPages() {
     for (let i = 0; i < total; i++) arr.push(i);
     return arr;
   }
-  let from = parseInt(rangeFrom.value, 10);
-  let to = parseInt(rangeTo.value, 10);
-  if (isNaN(from)) from = 1;
-  if (isNaN(to)) to = total;
+  let from = parseInt(rangeFrom.value, 10) || 1;
+  let to = parseInt(rangeTo.value, 10) || total;
   from = Math.max(1, Math.min(from, total));
   to = Math.max(1, Math.min(to, total));
   if (from > to) [from, to] = [to, from];
   const skipSet = parseSkipList(skipPages.value, total);
   const pages = [];
-  for (let i = from; i <= to; i++) {
-    if (!skipSet.has(i)) pages.push(i - 1);
-  }
+  for (let i = from; i <= to; i++) if (!skipSet.has(i)) pages.push(i - 1);
   return pages;
 }
-
-function updatePreview() {
-  if (!splitDoc || splitMode !== 'range') return;
-  const pages = getSplitPages();
-  previewPages.innerHTML = '';
-  if (pages.length === 0) {
-    previewPages.innerHTML = '<span class="preview-empty">គ្មានទំព័រ</span>';
-    previewSummary.innerHTML = '';
-    return;
-  }
-  const shown = pages.slice(0, 100);
-  shown.forEach(p => {
-    const chip = document.createElement('span');
-    chip.className = 'page-chip';
-    chip.textContent = p + 1;
-    previewPages.appendChild(chip);
-  });
-  if (pages.length > 100) {
-    const more = document.createElement('span');
-    more.className = 'page-chip';
-    more.style.background = '#94a3b8';
-    more.textContent = `+${pages.length - 100}`;
-    previewPages.appendChild(more);
-  }
-  previewSummary.innerHTML = `សរុប៖ <strong>${pages.length}</strong> ទំព័រ នឹងត្រូវបានចម្លង`;
-}
-
-rangeFrom.addEventListener('input', updatePreview);
-rangeTo.addEventListener('input', updatePreview);
-skipPages.addEventListener('input', updatePreview);
-
-document.querySelectorAll('.preset-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    if (!splitDoc) return;
-    const total = splitPageCount;
-    const preset = btn.dataset.preset;
-    if (preset === 'all') {
-      rangeFrom.value = 1; rangeTo.value = total; skipPages.value = '';
-    } else if (preset === 'first-half') {
-      rangeFrom.value = 1; rangeTo.value = Math.ceil(total / 2); skipPages.value = '';
-    } else if (preset === 'second-half') {
-      rangeFrom.value = Math.floor(total / 2) + 1; rangeTo.value = total; skipPages.value = '';
-    } else if (preset === 'odd') {
-      rangeFrom.value = 1; rangeTo.value = total;
-      const skips = [];
-      for (let i = 2; i <= total; i += 2) skips.push(i);
-      skipPages.value = skips.join(', ');
-    } else if (preset === 'even') {
-      rangeFrom.value = 1; rangeTo.value = total;
-      const skips = [];
-      for (let i = 1; i <= total; i += 2) skips.push(i);
-      skipPages.value = skips.join(', ');
-    }
-    updatePreview();
-  });
-});
 
 splitBtn.addEventListener('click', async () => {
   if (!splitDoc || !splitFile) return;
   const pages = getSplitPages();
   if (pages.length === 0) {
-    splitStatus.textContent = '❌ គ្មានទំព័រត្រូវចម្លងទេ';
+    splitStatus.textContent = '❌ No pages';
     splitStatus.classList.add('error');
     return;
   }
@@ -2360,8 +2496,7 @@ splitBtn.addEventListener('click', async () => {
       await splitRange(pages);
     }
   } catch (err) {
-    console.error(err);
-    splitStatus.textContent = '❌ មានបញ្ហា៖ ' + (err.message || 'មិនអាចបំបែកបាន');
+    splitStatus.textContent = '❌ ' + (err.message || 'Error');
     splitStatus.classList.add('error');
   } finally {
     splitBtn.disabled = false;
@@ -2373,7 +2508,7 @@ splitBtn.addEventListener('click', async () => {
 });
 
 async function splitRange(pages) {
-  const baseName = splitFile.name.replace(/\.pdf$/i, '');
+  const name = splitNameInput.value.trim() || 'split-document';
   updateSplitProgress(15);
   const newDoc = await PDFDocument.create();
   const copiedPages = await newDoc.copyPages(splitDoc, pages);
@@ -2382,34 +2517,36 @@ async function splitRange(pages) {
   const bytes = await newDoc.save();
   updateSplitProgress(100);
   const blob = new Blob([bytes], { type: 'application/pdf' });
-  const fileName = `${baseName}-split.pdf`;
+  const fileName = `${name}.pdf`;
   setResult('split', blob, fileName);
   showResultCard('split', fileName);
   resetSplitBtn.classList.add('show');
+  await addToHistory({ type: 'split', name: fileName, pages: pages.length, blob });
 }
 
 async function splitEachPage() {
-  const baseName = splitFile.name.replace(/\.pdf$/i, '');
+  const name = splitNameInput.value.trim() || 'split-document';
   const total = splitPageCount;
   await loadJSZip();
   const zip = new JSZip();
-  const folder = zip.folder(`${baseName}-split`);
+  const folder = zip.folder(name);
   for (let i = 0; i < total; i++) {
     const newDoc = await PDFDocument.create();
     const [page] = await newDoc.copyPages(splitDoc, [i]);
     newDoc.addPage(page);
     const bytes = await newDoc.save();
-    folder.file(`page-${String(i + 1).padStart(3, '0')}.pdf`, bytes);
+    folder.file(`${name}-page-${String(i + 1).padStart(3, '0')}.pdf`, bytes);
     updateSplitProgress(Math.round(((i + 1) / total) * 90));
-    await new Promise(r => setTimeout(r, 20));
+    if (i % 5 === 0) await new Promise(r => setTimeout(r, 0));
   }
   updateSplitProgress(95);
   const zipBlob = await zip.generateAsync({ type: 'blob' });
   updateSplitProgress(100);
-  const fileName = `${baseName}-split.zip`;
+  const fileName = `${name}.zip`;
   setResult('split', zipBlob, fileName);
   showResultCard('split', fileName);
   resetSplitBtn.classList.add('show');
+  await addToHistory({ type: 'split', name: fileName, pages: total, blob: zipBlob });
 }
 
 let jszipLoaded = false;
@@ -2425,13 +2562,10 @@ function loadJSZip() {
 }
 
 resetSplitBtn.addEventListener('click', () => {
-  splitFile = null;
-  splitDoc = null;
-  splitPageCount = 0;
+  splitFile = null; splitDoc = null; splitPageCount = 0;
   splitInput.value = '';
-  rangeFrom.value = 1;
-  rangeTo.value = 1;
-  skipPages.value = '';
+  rangeFrom.value = 1; rangeTo.value = 1; skipPages.value = '';
+  splitNameInput.value = 'split-document';
   splitInfo.style.display = 'none';
   splitOptions.style.display = 'none';
   clearResult('split');
@@ -2442,17 +2576,32 @@ resetSplitBtn.addEventListener('click', () => {
   splitStatus.classList.remove('success', 'error');
   splitBtn.disabled = true;
   resetSplitBtn.classList.remove('show');
-  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-  document.querySelector('.mode-btn[data-mode="range"]').classList.add('active');
+  document.querySelectorAll('.mode-btn').forEach(b => {
+    b.classList.remove('active');
+    b.style.background = 'var(--bg-card)';
+    b.style.color = 'var(--text-mid)';
+  });
+  const first = document.querySelector('.mode-btn[data-mode="range"]');
+  first.classList.add('active');
+  first.style.background = 'linear-gradient(135deg,#ecfeff,#cffafe)';
+  first.style.color = 'var(--split-dark)';
   splitMode = 'range';
   rangeModeOptions.style.display = 'block';
   eachModeOptions.style.display = 'none';
   window.scrollTo({ top: 0, behavior: 'smooth' });
 });
-
 function updateSplitProgress(p) {
   splitProgressFill.style.width = p + '%';
   splitProgressText.textContent = p + '%';
+}
+
+/* ==================== INIT ==================== */
+applyLang();
+applyTheme();
+renderHistory();
+
+if (window.pdfjsLib) {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 }
 </script>
 </body>
